@@ -18,10 +18,6 @@ import java.util.Properties;
  */
 public class Util {
     public static final String PROPS_FILE = "conductorAPI.properties";
-//    public static final String APIKEY_KEY = "", SHARED_SECRET_KEY = "";
-    public static final String URL_RECOMM_ENGINE_KEY = "recoEngineUrl";
-    public static final String APPLICATION_HTML = "text/html";
-    public static final String PATH_PROCESSOR = "/bin/ready/conductor-getrecomm";
 
     /**
      * Read config properties file.

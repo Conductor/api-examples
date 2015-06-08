@@ -44,7 +44,7 @@ public class StreamBuilder {
     /**
      *
      * @param url - the complete url for the API endpoint to be accessed
-     * @return the InputStream object which can be used to get the jSon response
+     * @return the InputStream object which can be used to get the json response
      */
     public static InputStream buildInStream(String url){
 
@@ -56,6 +56,7 @@ public class StreamBuilder {
             InputStream is = entity.getContent();
             return is;
         } catch (IOException e) {
+            System.out.println("Error in StreamBuilder.buildInStream");
             e.printStackTrace();
         }
         return null;
