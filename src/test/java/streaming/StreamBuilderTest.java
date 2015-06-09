@@ -1,42 +1,71 @@
 package streaming;
 
+import beans.Location;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import generated.Location;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by anihalani on 6/5/15.
  */
 public class StreamBuilderTest {
+    String generatedUrl;
+    InputStream instream;
+
+    @Before
+    public void setup(){
+         generatedUrl = new APIPathBuilder("https://api.conductor.com", "locations").build();
+         instream = new StreamBuilder(generatedUrl).getInstream();
+    }
 
     @Test
     public void testStreamBuilder() {
-        String generatedUrl = new APIPathBuilder("https://api.conductor.com", "locations").build();
-        InputStream instream = new StreamBuilder(generatedUrl).getInstream();
-
         // Check if it is null
         assertNotNull(instream);
         // Check if a list of Location objects is being returned
-        List<Location> locationList = mapLocationObject(instream);
-        assertNotNull(locationList);
-        // Check if the list has location objects
-        assertTrue(locationList.size() > 0);
+        try{
+            List<Location> locationList = mapLocationObject(instream);
+            assertNotNull(locationList);
+            // Check if the list has location objects
+            assertTrue(locationList.size() > 0);
+        }catch(Exception e){
+            System.out.println("Test Failing! Error in testStreamBuilder!");
+            e.printStackTrace();
+        }
     }
 
-    private List<Location> mapLocationObject(InputStream is) {
+    //Check if incorrect object is mapped
+    @Test
+    public void checkInValidStreams(){
+        generatedUrl = new APIPathBuilder("https://api.conductor.com", "devices").build();
+        instream = new StreamBuilder(generatedUrl).getInstream();
+
+        // Check if a list of Location objects is being returned
+        try{
+            List<Location> locationList = mapLocationObject(instream);
+        }catch(Exception e){
+            assertEquals(e.getClass(), UnrecognizedPropertyException.class);
+        }
+    }
+
+    /**
+     *
+     * @param is - Input Stream
+     * @return List of locations returned from API endpoint (input stream)
+     * @throws Exception IOException, jsonParseException
+     */
+    private List<Location> mapLocationObject(InputStream is) throws Exception{
         try {
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser jParser = jsonFactory.createJsonParser(is);
@@ -50,14 +79,8 @@ public class StreamBuilderTest {
                 locations.add(objectMapper.readValue(jParser, Location.class));
             }
             return locations;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (Exception e) {
+            throw e;
         } finally {
             try {
                 is.close();
@@ -65,7 +88,5 @@ public class StreamBuilderTest {
                 e.printStackTrace();
             }
         }
-        return null;
-
     }
 }

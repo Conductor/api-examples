@@ -1,4 +1,4 @@
-package sql;
+package jdbc;
 
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class JDBCConnectionTest {
     public void testGetConnection() throws Exception {
         Connection conn = JDBCConnection.getConnection();
 
-        // Check if sql connection is null
+        // Check if jdbc connection is null
         assertNotNull(conn);
     }
 }

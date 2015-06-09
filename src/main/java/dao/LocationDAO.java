@@ -1,7 +1,7 @@
 package dao;
 
 import beans.Location;
-import sql.JDBCConnection;
+import jdbc.JDBCConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
