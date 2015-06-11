@@ -9,7 +9,7 @@ public class APIPathBuilder {
     private String baseUrl;
     private String endpointParameter;
 
-    private APIPathBuilder(String baseUrl) {
+    public APIPathBuilder(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -31,9 +31,12 @@ public class APIPathBuilder {
 
     /**
      * Builds and return a complete url including the api baseUrl, endpoint paramter, apiKey and the Shared secret
+     * 
      * @return
+     * @param endpointLocations
      */
-    public String build() {
+    public String build(String endpointLocations) {
+        this.endpointParameter = endpointLocations;
         StringBuilder builder = new StringBuilder(baseUrl);
         builder.append("/v3/");
         builder.append(endpointParameter);

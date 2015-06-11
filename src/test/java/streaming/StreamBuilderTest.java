@@ -22,10 +22,11 @@ import static org.junit.Assert.*;
 public class StreamBuilderTest {
     String generatedUrl;
     InputStream instream;
+    private static final String ENDPOINT_LOCATIONS = "locations";
 
     @Before
     public void setup(){
-         generatedUrl = new APIPathBuilder("https://api.conductor.com", "locations").build();
+         generatedUrl = new APIPathBuilder("https://api.conductor.com", "locations").build(ENDPOINT_LOCATIONS);
          instream = new StreamBuilder(generatedUrl).getInstream();
     }
 
@@ -48,7 +49,7 @@ public class StreamBuilderTest {
     //Check if incorrect object is mapped
     @Test
     public void checkInValidStreams(){
-        generatedUrl = new APIPathBuilder("https://api.conductor.com", "devices").build();
+        generatedUrl = new APIPathBuilder("https://api.conductor.com", "devices").build(ENDPOINT_LOCATIONS);
         instream = new StreamBuilder(generatedUrl).getInstream();
 
         // Check if a list of Location objects is being returned

@@ -15,7 +15,7 @@ public class APIPathBuilderTest {
     @Test
     public void testBaseUrl(){
         APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL, ENDPOINT_LOCATIONS);
-        String url = path.build();
+        String url = path.build(ENDPOINT_LOCATIONS);
         // check if url is null
         assertNotNull(url);
         // check if correct expected url is being returned

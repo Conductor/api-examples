@@ -26,7 +26,9 @@ public class StreamBuilder {
 
     /**
      * Sets the inputStream property of class StreamBuilder
-     * @param instream - the input stream to read from
+     * 
+     * @param instream
+     *            - the input stream to read from
      */
     public void setInstream(InputStream instream) {
         this.inputStream = instream;
@@ -34,6 +36,7 @@ public class StreamBuilder {
 
     /**
      * Returns the input stream
+     * 
      * @return inputStream - the input stream for the api end point
      */
     public InputStream getInstream() {
@@ -43,10 +46,11 @@ public class StreamBuilder {
 
     /**
      *
-     * @param url - the complete url for the API endpoint to be accessed
+     * @param url
+     *            - the complete url for the API endpoint to be accessed
      * @return the InputStream object which can be used to get the json response
      */
-    public static InputStream buildInStream(String url){
+    public static InputStream buildInStream(String url) {
 
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();

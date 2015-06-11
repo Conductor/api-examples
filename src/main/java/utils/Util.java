@@ -75,4 +75,23 @@ public class Util {
         return hexEncoded;
     }
 
+    /**
+     *Generates the final service url by concatenating all the required parameters
+     * @param apiEndpointUrl - the Conductor base API url + the endpoint parameter
+     * @return - the complete url with the API key and signature
+     */
+    public static String generateServiceUrlForWebProperties(final String apiEndpointUrl){
+        try {
+            Properties properties = readProperties(PROPS_FILE);
+            return apiEndpointUrl
+                    + "?apiKey="
+                    + properties.getProperty("API_KEY")
+                    + "&sig="
+                    + generateSignature(properties.getProperty("API_KEY"), properties.getProperty("SHARED_SECRET"));
+        } catch (NoSuchAlgorithmException e) {
+            // nothing we can do about this
+            throw new RuntimeException(e);
+        }
+    }
+
 }

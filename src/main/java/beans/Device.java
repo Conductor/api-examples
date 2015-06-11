@@ -1,4 +1,5 @@
 package beans;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -7,11 +8,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * Created by anihalani on 6/8/15.
  */
 
-
-@JsonPropertyOrder({
-        "description",
-        "deviceId"
-})
+@JsonPropertyOrder({ "description", "deviceId" })
 public class Device {
 
     @JsonProperty("description")
@@ -21,8 +18,7 @@ public class Device {
 
     /**
      *
-     * @return
-     * The description
+     * @return The description
      */
     @JsonProperty("description")
     public String getDescription() {
@@ -32,7 +28,7 @@ public class Device {
     /**
      *
      * @param description
-     * The description
+     *            The description
      */
     @JsonProperty("description")
     public void setDescription(String description) {
@@ -46,8 +42,7 @@ public class Device {
 
     /**
      *
-     * @return
-     * The deviceId
+     * @return The deviceId
      */
     @JsonProperty("deviceId")
     public int getDeviceId() {
@@ -57,7 +52,7 @@ public class Device {
     /**
      *
      * @param deviceId
-     * The deviceId
+     *            The deviceId
      */
     @JsonProperty("deviceId")
     public void setDeviceId(int deviceId) {
@@ -76,12 +71,15 @@ public class Device {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Device device = (Device) o;
 
-        if (deviceId != device.deviceId) return false;
+        if (deviceId != device.deviceId)
+            return false;
         return description.equals(device.description);
 
     }

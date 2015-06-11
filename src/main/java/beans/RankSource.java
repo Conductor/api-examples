@@ -20,7 +20,6 @@ public class RankSource {
     @JsonProperty("name")
     private String name;
 
-
     /**
      *
      * @return The baseDomain
@@ -124,14 +123,19 @@ public class RankSource {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         RankSource that = (RankSource) o;
 
-        if (rankSourceId != that.rankSourceId) return false;
-        if (!baseDomain.equals(that.baseDomain)) return false;
-        if (!description.equals(that.description)) return false;
+        if (rankSourceId != that.rankSourceId)
+            return false;
+        if (!baseDomain.equals(that.baseDomain))
+            return false;
+        if (!description.equals(that.description))
+            return false;
         return name.equals(that.name);
 
     }
