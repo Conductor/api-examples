@@ -33,15 +33,31 @@ public class APIPathBuilder {
      * Builds and return a complete url including the api baseUrl, endpoint paramter, apiKey and the Shared secret
      * 
      * @return
-     * @param endpointLocations
+     * @param completeUrl
      */
-    public String build(String endpointLocations) {
-        this.endpointParameter = endpointLocations;
+    public String addKeyAndSignature(String completeUrl) {
+        StringBuilder builder = new StringBuilder(completeUrl);
+        return Util.generateRecoServiceUrl(builder.toString());
+    }
+
+    /**
+     * Adds a signature apiKey and the Shared secret
+     *
+     * @return
+     * @param endpoint
+     */
+    public String build(String endpoint) {
         StringBuilder builder = new StringBuilder(baseUrl);
         builder.append("/v3/");
-        builder.append(endpointParameter);
-        return Util.generateRecoServiceUrl(builder.toString());
+        builder.append(endpoint);
+        return (builder.toString());
+    }
 
+    public String addEndPointWithValue(String url, String endpoint, String parameterValue){
+        StringBuilder builder = new StringBuilder(url);
+        builder.append("/"+endpoint+"/"+parameterValue);
+      //  builder.a
+        return builder.toString();
     }
 
 }

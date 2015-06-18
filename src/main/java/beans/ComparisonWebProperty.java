@@ -17,6 +17,25 @@ public class ComparisonWebProperty {
     @JsonProperty("webPropertyId")
     private int webPropertyId;
 
+    private int accountId;
+
+    /**
+     * Getter for AccountId
+     * @return the account id associated with the current associated web property
+     */
+    public int getAccountId() {
+        return accountId;
+    }
+
+    /**
+     * Setter for Account Id
+     * @param accountId - the account id for the comparison web property
+     */
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
+    }
+
+
     /**
      *
      * @return The label

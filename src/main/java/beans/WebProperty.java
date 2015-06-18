@@ -24,6 +24,26 @@ public class WebProperty {
     @JsonProperty("name")
     private String name;
 
+    private int accountId;
+
+    /**
+     *
+     * @return the Accound Id
+     */
+    public int getAccountId() {
+        return accountId;
+    }
+
+    /**
+     *
+     * @param accountId - the Account id for the web property
+     */
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
+    }
+
+
+
     /**
      *
      * @return The isActive
