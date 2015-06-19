@@ -11,13 +11,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonPropertyOrder({ "baseDomain", "description", "rankSourceId", "name" })
 public class RankSource {
 
-    @JsonProperty("baseDomain")
     private String baseDomain;
-    @JsonProperty("description")
     private String description;
-    @JsonProperty("rankSourceId")
     private int rankSourceId;
-    @JsonProperty("name")
     private String name;
 
     /**
@@ -34,14 +30,8 @@ public class RankSource {
      * @param baseDomain
      *            The baseDomain
      */
-    @JsonProperty("baseDomain")
     public void setBaseDomain(String baseDomain) {
         this.baseDomain = baseDomain;
-    }
-
-    public RankSource withBaseDomain(String baseDomain) {
-        this.baseDomain = baseDomain;
-        return this;
     }
 
     /**
@@ -58,14 +48,8 @@ public class RankSource {
      * @param description
      *            The description
      */
-    @JsonProperty("description")
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public RankSource withDescription(String description) {
-        this.description = description;
-        return this;
     }
 
     /**
@@ -82,14 +66,8 @@ public class RankSource {
      * @param rankSourceId
      *            The rankSourceId
      */
-    @JsonProperty("rankSourceId")
     public void setRankSourceId(int rankSourceId) {
         this.rankSourceId = rankSourceId;
-    }
-
-    public RankSource withRankSourceId(int rankSourceId) {
-        this.rankSourceId = rankSourceId;
-        return this;
     }
 
     /**
@@ -106,14 +84,8 @@ public class RankSource {
      * @param name
      *            The name
      */
-    @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
-    }
-
-    public RankSource withName(String name) {
-        this.name = name;
-        return this;
     }
 
     @Override
@@ -132,20 +104,20 @@ public class RankSource {
 
         if (rankSourceId != that.rankSourceId)
             return false;
-        if (!baseDomain.equals(that.baseDomain))
+        if (baseDomain != null ? !baseDomain.equals(that.baseDomain) : that.baseDomain != null)
             return false;
-        if (!description.equals(that.description))
+        if (description != null ? !description.equals(that.description) : that.description != null)
             return false;
-        return name.equals(that.name);
+        return !(name != null ? !name.equals(that.name) : that.name != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = baseDomain.hashCode();
-        result = 31 * result + description.hashCode();
+        int result = baseDomain != null ? baseDomain.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + rankSourceId;
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 }

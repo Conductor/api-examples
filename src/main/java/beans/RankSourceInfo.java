@@ -1,16 +1,10 @@
 package beans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by anihalani on 6/9/15.
@@ -19,14 +13,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "reports", "comparisonWebProperties", "rankSourceId" })
 public class RankSourceInfo {
 
-    @JsonProperty("reports")
     private Reports reports;
-    @JsonProperty("comparisonWebProperties")
     private List<ComparisonWebProperty> comparisonWebProperties = new ArrayList<ComparisonWebProperty>();
-    @JsonProperty("rankSourceId")
     private String rankSourceId;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      *
@@ -42,14 +31,8 @@ public class RankSourceInfo {
      * @param reports
      *            The reports
      */
-    @JsonProperty("reports")
     public void setReports(Reports reports) {
         this.reports = reports;
-    }
-
-    public RankSourceInfo withReports(Reports reports) {
-        this.reports = reports;
-        return this;
     }
 
     /**
@@ -66,14 +49,8 @@ public class RankSourceInfo {
      * @param comparisonWebProperties
      *            The comparisonWebProperties
      */
-    @JsonProperty("comparisonWebProperties")
     public void setComparisonWebProperties(List<ComparisonWebProperty> comparisonWebProperties) {
         this.comparisonWebProperties = comparisonWebProperties;
-    }
-
-    public RankSourceInfo withComparisonWebProperties(List<ComparisonWebProperty> comparisonWebProperties) {
-        this.comparisonWebProperties = comparisonWebProperties;
-        return this;
     }
 
     /**
@@ -90,29 +67,33 @@ public class RankSourceInfo {
      * @param rankSourceId
      *            The rankSourceId
      */
-    @JsonProperty("rankSourceId")
     public void setRankSourceId(String rankSourceId) {
         this.rankSourceId = rankSourceId;
     }
 
-    public RankSourceInfo withRankSourceId(String rankSourceId) {
-        this.rankSourceId = rankSourceId;
-        return this;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        RankSourceInfo that = (RankSourceInfo) o;
+
+        if (reports != null ? !reports.equals(that.reports) : that.reports != null)
+            return false;
+        if (comparisonWebProperties != null ? !comparisonWebProperties.equals(that.comparisonWebProperties)
+                : that.comparisonWebProperties != null)
+            return false;
+        return !(rankSourceId != null ? !rankSourceId.equals(that.rankSourceId) : that.rankSourceId != null);
+
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @Override
+    public int hashCode() {
+        int result = reports != null ? reports.hashCode() : 0;
+        result = 31 * result + (comparisonWebProperties != null ? comparisonWebProperties.hashCode() : 0);
+        result = 31 * result + (rankSourceId != null ? rankSourceId.hashCode() : 0);
+        return result;
     }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    public RankSourceInfo withAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
-    }
-
 }

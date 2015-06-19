@@ -7,20 +7,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonPropertyOrder({ "locationId", "description" })
 public class Location {
 
-    @JsonProperty("locationId")
     private String locationId;
-    @JsonProperty("description")
     private String description;
-
-    public Location() {
-
-    }
 
     public Location(String locationId, String description) {
         this.locationId = locationId;
         this.description = description;
     }
 
+    public Location(){}
     /**
      *
      * @return The locationId
@@ -35,14 +30,8 @@ public class Location {
      * @param locationId
      *            The locationId
      */
-    @JsonProperty("locationId")
     public void setLocationId(String locationId) {
         this.locationId = locationId;
-    }
-
-    public Location withLocationId(String locationId) {
-        this.locationId = locationId;
-        return this;
     }
 
     /**
@@ -59,14 +48,8 @@ public class Location {
      * @param description
      *            The description
      */
-    @JsonProperty("description")
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Location withDescription(String description) {
-        this.description = description;
-        return this;
     }
 
     @Override
@@ -83,16 +66,16 @@ public class Location {
 
         Location location = (Location) o;
 
-        if (!locationId.equals(location.locationId))
+        if (locationId != null ? !locationId.equals(location.locationId) : location.locationId != null)
             return false;
-        return description.equals(location.description);
+        return !(description != null ? !description.equals(location.description) : location.description != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = locationId.hashCode();
-        result = 31 * result + description.hashCode();
+        int result = locationId != null ? locationId.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }
 }

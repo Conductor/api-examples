@@ -16,13 +16,15 @@ public class StreamBuilder {
 
     InputStream inputStream;
 
-    public StreamBuilder(InputStream inputStream) {
+  /*  public StreamBuilder(InputStream inputStream) {
         this.inputStream = inputStream;
-    }
+    }*/
 
     public StreamBuilder(String url) {
         this.inputStream = buildInStream(url);
     }
+
+    public StreamBuilder(){}
 
     /**
      * Sets the inputStream property of class StreamBuilder
@@ -50,7 +52,7 @@ public class StreamBuilder {
      *            - the complete url for the API endpoint to be accessed
      * @return the InputStream object which can be used to get the json response
      */
-    public static InputStream buildInStream(String url) {
+    public InputStream buildInStream(String url) {
 
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();

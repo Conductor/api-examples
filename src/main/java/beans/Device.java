@@ -11,9 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonPropertyOrder({ "description", "deviceId" })
 public class Device {
 
-    @JsonProperty("description")
     private String description;
-    @JsonProperty("deviceId")
     private int deviceId;
 
     /**
@@ -30,14 +28,8 @@ public class Device {
      * @param description
      *            The description
      */
-    @JsonProperty("description")
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Device withDescription(String description) {
-        this.description = description;
-        return this;
     }
 
     /**
@@ -54,14 +46,8 @@ public class Device {
      * @param deviceId
      *            The deviceId
      */
-    @JsonProperty("deviceId")
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public Device withDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-        return this;
     }
 
     @Override
@@ -80,13 +66,13 @@ public class Device {
 
         if (deviceId != device.deviceId)
             return false;
-        return description.equals(device.description);
+        return !(description != null ? !description.equals(device.description) : device.description != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = description.hashCode();
+        int result = description != null ? description.hashCode() : 0;
         result = 31 * result + deviceId;
         return result;
     }

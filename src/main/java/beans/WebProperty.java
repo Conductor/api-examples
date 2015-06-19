@@ -36,13 +36,12 @@ public class WebProperty {
 
     /**
      *
-     * @param accountId - the Account id for the web property
+     * @param accountId
+     *            - the Account id for the web property
      */
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
-
-
 
     /**
      *

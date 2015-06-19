@@ -9,8 +9,25 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "Current" })
 public class Reports {
 
-    @JsonProperty("CURRENT")
     private beans.Current Current;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Reports reports = (Reports) o;
+
+        return !(Current != null ? !Current.equals(reports.Current) : reports.Current != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Current != null ? Current.hashCode() : 0;
+    }
 
     /**
      *
@@ -26,14 +43,8 @@ public class Reports {
      * @param current
      *            The Current
      */
-    @JsonProperty("CURRENT")
     public void setCurrent(beans.Current current) {
         this.Current = current;
-    }
-
-    public Reports withCURRENT(beans.Current current) {
-        this.Current = current;
-        return this;
     }
 
 }

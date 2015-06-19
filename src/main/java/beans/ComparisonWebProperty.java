@@ -10,31 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "label", "name", "webPropertyId" })
 public class ComparisonWebProperty {
 
-    @JsonProperty("label")
     private String label;
-    @JsonProperty("name")
     private String name;
-    @JsonProperty("webPropertyId")
     private int webPropertyId;
-
     private int accountId;
-
-    /**
-     * Getter for AccountId
-     * @return the account id associated with the current associated web property
-     */
-    public int getAccountId() {
-        return accountId;
-    }
-
-    /**
-     * Setter for Account Id
-     * @param accountId - the account id for the comparison web property
-     */
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
-
 
     /**
      *
@@ -50,14 +29,8 @@ public class ComparisonWebProperty {
      * @param label
      *            The label
      */
-    @JsonProperty("label")
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public ComparisonWebProperty withLabel(String label) {
-        this.label = label;
-        return this;
     }
 
     /**
@@ -74,14 +47,8 @@ public class ComparisonWebProperty {
      * @param name
      *            The name
      */
-    @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
-    }
-
-    public ComparisonWebProperty withName(String name) {
-        this.name = name;
-        return this;
     }
 
     /**
@@ -98,14 +65,27 @@ public class ComparisonWebProperty {
      * @param webPropertyId
      *            The webPropertyId
      */
-    @JsonProperty("webPropertyId")
     public void setWebPropertyId(int webPropertyId) {
         this.webPropertyId = webPropertyId;
     }
 
-    public ComparisonWebProperty withWebPropertyId(int webPropertyId) {
-        this.webPropertyId = webPropertyId;
-        return this;
+    /**
+     * Getter for AccountId
+     * 
+     * @return the account id associated with the current associated web property
+     */
+    public int getAccountId() {
+        return accountId;
+    }
+
+    /**
+     * Setter for Account Id
+     * 
+     * @param accountId
+     *            - the account id for the comparison web property
+     */
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     @Override
@@ -119,17 +99,20 @@ public class ComparisonWebProperty {
 
         if (webPropertyId != that.webPropertyId)
             return false;
+        if (accountId != that.accountId)
+            return false;
         if (label != null ? !label.equals(that.label) : that.label != null)
             return false;
-        return name.equals(that.name);
+        return !(name != null ? !name.equals(that.name) : that.name != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + webPropertyId;
+        result = 31 * result + accountId;
         return result;
     }
 }

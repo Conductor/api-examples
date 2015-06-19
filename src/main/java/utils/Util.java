@@ -66,6 +66,7 @@ public class Util {
      */
     private static String generateSignature(final String apiKey, final String sharedSecret)
             throws NoSuchAlgorithmException {
+        System.gc();
         final long curTimeEpochSeconds = Math.round(System.currentTimeMillis() / 1000.0);
         final String stringToHash = apiKey + sharedSecret + curTimeEpochSeconds;
         final MessageDigest md = MessageDigest.getInstance("MD5");
