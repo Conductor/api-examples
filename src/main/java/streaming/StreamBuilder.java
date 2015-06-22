@@ -16,15 +16,12 @@ public class StreamBuilder {
 
     InputStream inputStream;
 
-  /*  public StreamBuilder(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }*/
-
     public StreamBuilder(String url) {
         this.inputStream = buildInStream(url);
     }
 
-    public StreamBuilder(){}
+    public StreamBuilder() {
+    }
 
     /**
      * Sets the inputStream property of class StreamBuilder
@@ -59,8 +56,8 @@ public class StreamBuilder {
             HttpGet getRequest = new HttpGet(url);
             HttpResponse httpResponse = httpClient.execute(getRequest);
             HttpEntity entity = httpResponse.getEntity();
-            InputStream is = entity.getContent();
-            return is;
+            return entity.getContent();
+
         } catch (IOException e) {
             System.out.println("Error in StreamBuilder.buildInStream");
             e.printStackTrace();

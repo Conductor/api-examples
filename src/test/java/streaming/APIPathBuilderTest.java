@@ -19,7 +19,17 @@ public class APIPathBuilderTest {
         // check if url is null
         assertNotNull(url);
         // check if correct expected url is being returned
-        assertEquals(true, url.contains("api.conductor.com/v3/locations?apiKey=obwijyt9sjplrzwk8c9nrmb276tk5cyym9orp1l4&sig="));
+        assertEquals("https://api.conductor.com/v3/locations", url);
     }
 
+    @Test
+    public void testAPIKeyAndSignature(){
+        APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL, ENDPOINT_LOCATIONS);
+        String url = path.build(ENDPOINT_LOCATIONS);
+        url = path.addKeyAndSignature(url);
+        // check if url is null
+        assertNotNull(url);
+        // check if correct expected url is being returned
+        assertEquals(true, url.contains("api.conductor.com/v3/locations?apiKey=obwijyt9sjplrzwk8c9nrmb276tk5cyym9orp1l4&sig="));
+    }
 }

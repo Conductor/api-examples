@@ -2,10 +2,10 @@ package streaming;
 
 import beans.Location;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class StreamBuilderTest {
         try{
             List<Location> locationList = mapLocationObject(instream);
         }catch(Exception e){
-            assertEquals(e.getClass(), UnrecognizedPropertyException.class);
+            assertEquals(e.getClass(), JsonParseException.class);
         }
     }
 

@@ -118,7 +118,7 @@ public class DAO {
         String query = "insert into locale (locale_id, description) values (?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
-        preparedStmt.setString(1, location.getLocationId());
+        preparedStmt.setInt(1, location.getLocationId());
         preparedStmt.setString(2, location.getDescription());
 
         return preparedStmt;

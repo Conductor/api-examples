@@ -7,21 +7,23 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonPropertyOrder({ "locationId", "description" })
 public class Location {
 
-    private String locationId;
+    private int locationId;
     private String description;
 
-    public Location(String locationId, String description) {
+    public Location(int locationId, String description) {
         this.locationId = locationId;
         this.description = description;
     }
 
-    public Location(){}
+    public Location() {
+    }
+
     /**
      *
      * @return The locationId
      */
     @JsonProperty("locationId")
-    public String getLocationId() {
+    public int getLocationId() {
         return locationId;
     }
 
@@ -30,7 +32,7 @@ public class Location {
      * @param locationId
      *            The locationId
      */
-    public void setLocationId(String locationId) {
+    public void setLocationId(int locationId) {
         this.locationId = locationId;
     }
 
@@ -66,7 +68,7 @@ public class Location {
 
         Location location = (Location) o;
 
-        if (locationId != null ? !locationId.equals(location.locationId) : location.locationId != null)
+        if (locationId != location.locationId)
             return false;
         return !(description != null ? !description.equals(location.description) : location.description != null);
 
@@ -74,7 +76,7 @@ public class Location {
 
     @Override
     public int hashCode() {
-        int result = locationId != null ? locationId.hashCode() : 0;
+        int result = locationId;
         result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
     }

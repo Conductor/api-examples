@@ -53,6 +53,7 @@ public class APIDataDumper {
 
     /**
      * StreamBuilder Getter
+     * 
      * @return - the stream builder instance
      */
     public StreamBuilder getStreamBuilder() {
@@ -61,7 +62,9 @@ public class APIDataDumper {
 
     /**
      * StreamBuilder Setter
-     * @param streamBuilder - the streamBuilder instance to be set to
+     * 
+     * @param streamBuilder
+     *            - the streamBuilder instance to be set to
      */
     public void setStreamBuilder(StreamBuilder streamBuilder) {
         this.streamBuilder = streamBuilder;
@@ -143,8 +146,10 @@ public class APIDataDumper {
      * Gets the Tracked Search data returned from the API endpoint
      */
     public void writeTrackedSearchData(String urlWithoutSig) {
-        String trackedSearchUrl = pathBuilder.addKeyAndSignature(urlWithoutSig);
-        writeObjects(trackedSearchUrl, TrackedSearch.class, dao);
+        if (urlWithoutSig != null && urlWithoutSig != "") {
+            String trackedSearchUrl = pathBuilder.addKeyAndSignature(urlWithoutSig);
+            writeObjects(trackedSearchUrl, TrackedSearch.class, dao);
+        }
     }
 
     /**
@@ -152,7 +157,6 @@ public class APIDataDumper {
      * Rank Report data from API endpoints.
      */
     public void getWebPropertyRankReport() {
-        // DAO dao = new DAO();
         ResultSet rs = dao.getRankSourceIdsFromTrackedSearch();
 
         try {
@@ -188,7 +192,6 @@ public class APIDataDumper {
                     rs.close();
                     rs.getStatement().close();
                 }
-                // dao.closeConnection();
             } catch (SQLException e) {
                 System.out.println("Error while closing ResultSet/Statement in getWebPropertyDataReport");
                 e.printStackTrace();
@@ -204,7 +207,7 @@ public class APIDataDumper {
      * @param cl
      *            - the class of the objects expected to be returned in the Json
      */
-    public void writeObjects(String url, Class cl, DAO dao) {
+    private void writeObjects(String url, Class cl, DAO dao) {
         InputStream instream = null;
 
         try {
