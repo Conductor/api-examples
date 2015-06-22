@@ -10,19 +10,16 @@ public class Runner {
 
         APIDataDumper dataDumper = new APIDataDumper(CONDUCTOR_API_BASE_URL);
         try {
-//            Thread.sleep(1000);
-//            dataDumper.getLocationData();
-//            Thread.sleep(1000);
-//            dataDumper.getDeviceData();
-//            Thread.sleep(1000);
-//            dataDumper.getRankSourceData();
-//             Thread.sleep(1000);
-//             dataDumper.getWebPropertiesData();
-//             Thread.sleep(1000);
-            //
-            //
-             Thread.sleep(1000);
-             dataDumper.getWebPropertyRankReport();
+            Thread.sleep(1000);
+            dataDumper.getLocationData();
+            Thread.sleep(1000);
+            dataDumper.getDeviceData();
+            Thread.sleep(1000);
+            dataDumper.getRankSourceData();
+            Thread.sleep(1000);
+            dataDumper.getWebPropertiesData();
+            Thread.sleep(1000);
+            dataDumper.getWebPropertyRankReport();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
