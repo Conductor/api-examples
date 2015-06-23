@@ -14,8 +14,8 @@ public class APIPathBuilderTest {
 
     @Test
     public void testBaseUrl(){
-        APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL, ENDPOINT_LOCATIONS);
-        String url = path.build(ENDPOINT_LOCATIONS);
+        APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL);
+        String url = path.buildWithEndpoint(ENDPOINT_LOCATIONS, null);
         // check if url is null
         assertNotNull(url);
         // check if correct expected url is being returned
@@ -24,8 +24,8 @@ public class APIPathBuilderTest {
 
     @Test
     public void testAPIKeyAndSignature(){
-        APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL, ENDPOINT_LOCATIONS);
-        String url = path.build(ENDPOINT_LOCATIONS);
+        APIPathBuilder path = new APIPathBuilder(CONDUCTOR_API_BASE_URL);
+        String url = path.buildWithEndpoint(ENDPOINT_LOCATIONS, null);
         url = path.addKeyAndSignature(url);
         // check if url is null
         assertNotNull(url);

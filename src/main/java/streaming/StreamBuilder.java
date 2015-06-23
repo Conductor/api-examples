@@ -49,7 +49,7 @@ public class StreamBuilder {
      *            - the complete url for the API endpoint to be accessed
      * @return the InputStream object which can be used to get the json response
      */
-    public InputStream buildInStream(String url) {
+    public InputStream buildInStream(String url) throws RuntimeException {
 
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();
@@ -60,8 +60,7 @@ public class StreamBuilder {
 
         } catch (IOException e) {
             System.out.println("Error in StreamBuilder.buildInStream");
-            e.printStackTrace();
+            throw new RuntimeException(String.format("Unable to create InputStream from API \n %s", e.getStackTrace()));
         }
-        return null;
     }
 }

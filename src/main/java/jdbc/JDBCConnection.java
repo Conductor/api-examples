@@ -18,7 +18,7 @@ public class JDBCConnection {
      * 
      * @return JDBC Connection
      */
-    public static Connection getConnection() {
+    public static Connection getConnection() throws RuntimeException{
         try {
             // Register JDBC driver
             Class.forName(JDBC_DRIVER);
@@ -29,8 +29,7 @@ public class JDBCConnection {
             // Handle errors for JDBC
             // Handle errors for Class.forName
             System.out.println("Exception in JDBCConnection.getConnection");
-            e.printStackTrace();
+            throw new RuntimeException("Unable to create a connection using Class.forName(JDBC_DRIVER) in JDBC.getConnection ");
         }
-        return null;
     }
 }

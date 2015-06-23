@@ -221,16 +221,17 @@ public class DAO {
         }
         // Execute a query
         // the mysql insert statement
-        String query = "insert into tracked_search (tracked_search_id, preferred_url, query_phrase, location_id, rank_source_id, device_id, web_property_id ) values (?, ?, ?, ?, ?, ?, ?)";
+        String query = "insert into tracked_search (tracked_search_id, status_id, preferred_url, query_phrase, location_id, rank_source_id, device_id, web_property_id ) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, trackedSearch.getTrackedSearchId());
-        preparedStmt.setString(2, trackedSearch.getPreferredUrl());
-        preparedStmt.setString(3, trackedSearch.getQueryPhrase());
-        preparedStmt.setInt(4, trackedSearch.getLocationId());
-        preparedStmt.setInt(5, trackedSearch.getRankSourceId());
-        preparedStmt.setInt(6, trackedSearch.getDeviceId());
-        preparedStmt.setInt(7, trackedSearch.getWebPropertyId());
+        preparedStmt.setInt(2, (trackedSearch.isIsActive()==true ? 1:2));
+        preparedStmt.setString(3, trackedSearch.getPreferredUrl());
+        preparedStmt.setString(4, trackedSearch.getQueryPhrase());
+        preparedStmt.setInt(5, trackedSearch.getLocationId());
+        preparedStmt.setInt(6, trackedSearch.getRankSourceId());
+        preparedStmt.setInt(7, trackedSearch.getDeviceId());
+        preparedStmt.setInt(8, trackedSearch.getWebPropertyId());
         return preparedStmt;
     }
 
@@ -332,6 +333,7 @@ public class DAO {
             if (conn != null) {
                 conn = JDBCConnection.getConnection();
                 stmt = conn.createStatement();
+
                 // Execute a query
                 // the mysql select statement
                 String query = "select DISTINCT web_property.account_id, " + "tracked_search.web_property_id, "

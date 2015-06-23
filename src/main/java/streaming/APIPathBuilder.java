@@ -7,32 +7,15 @@ import utils.Util;
  */
 public class APIPathBuilder {
     private String baseUrl;
-    private String endpointParameter;
 
     public APIPathBuilder(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    public APIPathBuilder(String baseUrl, String endpoint) {
-        this.baseUrl = baseUrl;
-        this.endpointParameter = endpoint;
-    }
-
-    /**
-     * Used to set the enpoint for API query.
-     *
-     * @param endpoint
-     * @return
-     */
-    public APIPathBuilder setEndpoint(String endpoint) {
-        this.endpointParameter = endpoint;
-        return this;
-    }
-
     /**
      * Builds and return a complete url including the api baseUrl, endpoint paramter, apiKey and the Shared secret
      * 
-     * @return
+     * @return The complete usable API url with apiKey and Signature
      * @param completeUrl
      */
     public String addKeyAndSignature(String completeUrl) {
@@ -41,22 +24,42 @@ public class APIPathBuilder {
     }
 
     /**
-     * Adds a signature apiKey and the Shared secret
-     *
-     * @return
-     * @param endpoint
+     * Adds a endpoint to the url
+     * 
+     * @param endPoint
+     *            - The endpoint name (eg - "locations", "devices, "web-properties", etc")
+     * @param endPointValue
+     *            - The value of endPoint parameter
+     * @return The url that is a combination of baseUrl and endpoint
      */
-    public String build(String endpoint) {
+    public String buildWithEndpoint(String endPoint, String endPointValue) {
         StringBuilder builder = new StringBuilder(baseUrl);
-        builder.append("/v3/");
-        builder.append(endpoint);
+        builder.append("/v3");
+        if (endPoint != "" && endPoint != null) {
+            builder.append("/").append(endPoint);
+        }
+        if (endPointValue != "" && endPointValue != null) {
+            builder.append("/").append(endPointValue);
+        }
         return (builder.toString());
     }
 
-    public String addEndPointWithValue(String url, String endpoint, String parameterValue){
+    /**
+     *
+     * @param url
+     *            - The incomplete URl to which the parameters are to be added
+     * @param endpoint
+     *            - The endpoint name (eg - "locations", "devices, "web-properties", etc")
+     * @param parameterValue
+     *            - The value of the endpoint parameter (eg: '1')
+     * @return The string with endpoint and its value included
+     */
+    public String addEndPointWithValue(String url, String endpoint, String parameterValue) {
         StringBuilder builder = new StringBuilder(url);
-        builder.append("/"+endpoint+"/"+parameterValue);
-      //  builder.a
+        builder.append("/").append(endpoint);
+        if (parameterValue != "" && parameterValue != null) {
+            builder.append("/").append(parameterValue);
+        }
         return builder.toString();
     }
 

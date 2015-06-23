@@ -26,20 +26,18 @@ public class APIDataDumper {
     private static final String ENDPOINT_LOCATIONS = "locations";
     private static final String ENDPOINT_RANK_SOURCES = "rank-sources";
     private static final String ENDPOINT_DEVICES = "devices";
-    private static final String ENDPOINT_WEB_PROPERTY = "accounts/<<accountNumber>>/web-properties";
+    private static final String ENDPOINT_WEB_PROPERTY = "web-properties";
 
     private APIPathBuilder pathBuilder;
     private DAO dao;
     private StreamBuilder streamBuilder;
 
     /**
-     * DAO Getter
-     * 
-     * @return - The dao instance associated with current Data Dumper Instance
+     * Closes JDBC Connection
      */
 
-    public DAO getDao() {
-        return dao;
+    public void closeConnection() {
+        dao.closeConnection();
     }
 
     /**
@@ -78,7 +76,7 @@ public class APIDataDumper {
      */
     public APIDataDumper(String url) {
         this.baseUrl = url;
-        pathBuilder = new APIPathBuilder(url);
+        pathBuilder = new APIPathBuilder(baseUrl);
         dao = new DAO();
         streamBuilder = new StreamBuilder();
     }
@@ -98,8 +96,8 @@ public class APIDataDumper {
      *
      */
     public void getLocationData() {
-        String locationsUrl = pathBuilder.addKeyAndSignature(pathBuilder.build(ENDPOINT_LOCATIONS));
-        writeObjects(locationsUrl, Location.class, dao);
+        String locationsUrl = pathBuilder.addKeyAndSignature(pathBuilder.buildWithEndpoint(ENDPOINT_LOCATIONS, null));
+        writeObjects(locationsUrl, Location.class);
     }
 
     /**
@@ -107,16 +105,17 @@ public class APIDataDumper {
      *
      */
     public void getRankSourceData() {
-        String rankSourcesUrl = pathBuilder.addKeyAndSignature(pathBuilder.build(ENDPOINT_RANK_SOURCES));
-        writeObjects(rankSourcesUrl, RankSource.class, dao);
+        String rankSourcesUrl = pathBuilder.addKeyAndSignature(pathBuilder.buildWithEndpoint(ENDPOINT_RANK_SOURCES,
+                null));
+        writeObjects(rankSourcesUrl, RankSource.class);
     }
 
     /**
      * Writes the device data returned from the API endpoint to the local database
      */
     public void getDeviceData() {
-        String devicesUrl = pathBuilder.addKeyAndSignature(pathBuilder.build(ENDPOINT_DEVICES));
-        writeObjects(devicesUrl, Device.class, dao);
+        String devicesUrl = pathBuilder.addKeyAndSignature(pathBuilder.buildWithEndpoint(ENDPOINT_DEVICES, null));
+        writeObjects(devicesUrl, Device.class);
     }
 
     /**
@@ -129,10 +128,11 @@ public class APIDataDumper {
 
         try {
             for (String account : accounts) {
-                String webPropertyUrl = pathBuilder.addKeyAndSignature(pathBuilder.build(ENDPOINT_WEB_PROPERTY.replace(
-                        "<<accountNumber>>", account)));
+                String webPropertyUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, account);
+                webPropertyUrl = pathBuilder.addEndPointWithValue(webPropertyUrl, ENDPOINT_WEB_PROPERTY, null);
+                webPropertyUrl = pathBuilder.addKeyAndSignature(webPropertyUrl);
                 Thread.sleep(1000);
-                writeObjects(webPropertyUrl, WebProperty.class, dao);
+                writeObjects(webPropertyUrl, WebProperty.class);
 
             }
         } catch (InterruptedException e) {
@@ -148,7 +148,7 @@ public class APIDataDumper {
     public void writeTrackedSearchData(String urlWithoutSig) {
         if (urlWithoutSig != null && urlWithoutSig != "") {
             String trackedSearchUrl = pathBuilder.addKeyAndSignature(urlWithoutSig);
-            writeObjects(trackedSearchUrl, TrackedSearch.class, dao);
+            writeObjects(trackedSearchUrl, TrackedSearch.class);
         }
     }
 
@@ -165,7 +165,8 @@ public class APIDataDumper {
 
                 while (rs.next()) {
                     Thread.sleep(1000);
-                    String webPropertyRankReportUrl = pathBuilder.build(Integer.toString(rs.getInt("account_id")));
+                    String webPropertyRankReportUrl = pathBuilder.buildWithEndpoint(null,
+                            Integer.toString(rs.getInt("account_id")));
 
                     webPropertyRankReportUrl = pathBuilder.addEndPointWithValue(webPropertyRankReportUrl,
                             "web-properties", Integer.toString(rs.getInt("web_property_id")));
@@ -177,7 +178,7 @@ public class APIDataDumper {
 
                     webPropertyRankReportUrl = pathBuilder.addKeyAndSignature(webPropertyRankReportUrl);
 
-                    writeObjects(webPropertyRankReportUrl, ClientWebPropertyRankReport.class, dao);
+                    writeObjects(webPropertyRankReportUrl, ClientWebPropertyRankReport.class);
 
                 }
             }
@@ -190,7 +191,7 @@ public class APIDataDumper {
             try {
                 if (rs != null) {
                     rs.close();
-                    rs.getStatement().close();
+                    // rs.getStatement().close();
                 }
             } catch (SQLException e) {
                 System.out.println("Error while closing ResultSet/Statement in getWebPropertyDataReport");
@@ -207,7 +208,7 @@ public class APIDataDumper {
      * @param cl
      *            - the class of the objects expected to be returned in the Json
      */
-    private void writeObjects(String url, Class cl, DAO dao) {
+    private void writeObjects(String url, Class cl) {
         InputStream instream = null;
 
         try {
@@ -278,7 +279,7 @@ public class APIDataDumper {
      * 
      * @param url
      *            - The comple URL for Web-Property endpoint
-     * @return
+     * @return - The accountId from the URL
      */
     private int getAccountIdFromUrl(String url) {
         String[] tokens = url.split("/");
@@ -295,7 +296,7 @@ public class APIDataDumper {
      * 
      * @param url
      *            - The complete url for tracked-search endpoint
-     * @return
+     * @return - The WebProperty id from the url
      */
     private int getWebPropertyIdFromUrl(String url) {
         String[] tokens = url.split("/");
