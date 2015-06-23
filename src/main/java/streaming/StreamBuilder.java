@@ -25,7 +25,7 @@ public class StreamBuilder {
 
     /**
      * Sets the inputStream property of class StreamBuilder
-     * 
+     *
      * @param instream
      *            - the input stream to read from
      */
@@ -60,7 +60,7 @@ public class StreamBuilder {
 
         } catch (IOException e) {
             System.out.println("Error in StreamBuilder.buildInStream");
-            throw new RuntimeException(String.format("Unable to create InputStream from API \n %s", e.getStackTrace()));
+            throw new RuntimeException(String.format("Unable to create InputStream from API \n %s", e));
         }
     }
 }

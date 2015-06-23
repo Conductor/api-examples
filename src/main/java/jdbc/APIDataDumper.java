@@ -18,10 +18,11 @@ import java.util.Properties;
 
 /**
  * Created by anihalani on 6/9/15.
+ * DataDUmper class to stream endpoint data and interact with DAO
  */
 public class APIDataDumper {
 
-    private String baseUrl;
+
     private static final String ENDPOINT_ACCOUNTS = "accounts";
     private static final String ENDPOINT_LOCATIONS = "locations";
     private static final String ENDPOINT_RANK_SOURCES = "rank-sources";
@@ -50,15 +51,6 @@ public class APIDataDumper {
     }
 
     /**
-     * StreamBuilder Getter
-     * 
-     * @return - the stream builder instance
-     */
-    public StreamBuilder getStreamBuilder() {
-        return streamBuilder;
-    }
-
-    /**
      * StreamBuilder Setter
      * 
      * @param streamBuilder
@@ -75,8 +67,7 @@ public class APIDataDumper {
      *            - The Conductor API baseUrl
      */
     public APIDataDumper(String url) {
-        this.baseUrl = url;
-        pathBuilder = new APIPathBuilder(baseUrl);
+        pathBuilder = new APIPathBuilder(url);
         dao = new DAO();
         streamBuilder = new StreamBuilder();
     }
@@ -146,7 +137,7 @@ public class APIDataDumper {
      * Gets the Tracked Search data returned from the API endpoint
      */
     public void writeTrackedSearchData(String urlWithoutSig) {
-        if (urlWithoutSig != null && urlWithoutSig != "") {
+        if (urlWithoutSig != null && !urlWithoutSig.equals("")) {
             String trackedSearchUrl = pathBuilder.addKeyAndSignature(urlWithoutSig);
             writeObjects(trackedSearchUrl, TrackedSearch.class);
         }

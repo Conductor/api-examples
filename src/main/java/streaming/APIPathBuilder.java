@@ -16,11 +16,10 @@ public class APIPathBuilder {
      * Builds and return a complete url including the api baseUrl, endpoint paramter, apiKey and the Shared secret
      * 
      * @return The complete usable API url with apiKey and Signature
-     * @param completeUrl
+     * @param completeUrl - Url with all the endpoints and correspoinding values
      */
     public String addKeyAndSignature(String completeUrl) {
-        StringBuilder builder = new StringBuilder(completeUrl);
-        return Util.generateRecoServiceUrl(builder.toString());
+        return Util.generateRecoServiceUrl(completeUrl);
     }
 
     /**
@@ -35,10 +34,10 @@ public class APIPathBuilder {
     public String buildWithEndpoint(String endPoint, String endPointValue) {
         StringBuilder builder = new StringBuilder(baseUrl);
         builder.append("/v3");
-        if (endPoint != "" && endPoint != null) {
+        if (endPoint != null && !endPoint.equals("")) {
             builder.append("/").append(endPoint);
         }
-        if (endPointValue != "" && endPointValue != null) {
+        if (endPointValue != null && !endPointValue.equals("")) {
             builder.append("/").append(endPointValue);
         }
         return (builder.toString());
@@ -57,7 +56,7 @@ public class APIPathBuilder {
     public String addEndPointWithValue(String url, String endpoint, String parameterValue) {
         StringBuilder builder = new StringBuilder(url);
         builder.append("/").append(endpoint);
-        if (parameterValue != "" && parameterValue != null) {
+        if (parameterValue != null && parameterValue.equals("")) {
             builder.append("/").append(parameterValue);
         }
         return builder.toString();

@@ -7,6 +7,7 @@ import java.sql.*;
 
 /**
  * Created by anihalani on 6/9/15.
+ * DAO class to handle database interactions
  */
 public class DAO {
 

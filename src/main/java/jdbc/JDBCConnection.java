@@ -29,7 +29,7 @@ public class JDBCConnection {
             // Handle errors for JDBC
             // Handle errors for Class.forName
             System.out.println("Exception in JDBCConnection.getConnection");
-            throw new RuntimeException("Unable to create a connection using Class.forName(JDBC_DRIVER) in JDBC.getConnection ");
+            throw new RuntimeException("Unable to create a connection using Class.forName(JDBC_DRIVER) in JDBC.getConnection ", e);
         }
     }
 }

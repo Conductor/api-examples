@@ -14,10 +14,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by anihalani on 6/5/15.
+ * CLass to test StreamBuilder
  */
 public class StreamBuilderTest {
     String generatedUrl;
@@ -33,35 +35,36 @@ public class StreamBuilderTest {
         instream = new StreamBuilder(generatedUrl).getInstream();
     }
 
+    /**
+     * Verify if correct input stream is returned
+     * 
+     * @throws Exception
+     *             - JSONParse Exception while mapping objects
+     */
     @Test
-    public void testStreamBuilder() {
+    public void testStreamBuilder() throws Exception {
         // Check if it is null
         assertNotNull(instream);
         // Check if a list of Location objects is being returned
-        try {
-            List<Location> locationList = mapLocationObject(instream);
-            assertNotNull(locationList);
-            // Check if the list has location objects
-            assertTrue(locationList.size() > 0);
-        } catch (Exception e) {
-            System.out.println("Test Failing! Error in testStreamBuilder!");
-            e.printStackTrace();
-        }
+
+        List<Location> locationList = mapLocationObject(instream);
+        assertNotNull(locationList);
+        // Check if the list has location objects
+        assertTrue(locationList.size() > 0);
     }
 
-    // Check if incorrect object is mapped
-    @Test
-    public void checkInValidStreams() {
+    /**
+     * Verify that an exception is thrown if incorrect objects are tried to map
+     * 
+     * @throws Exception
+     *             - JSONParseException during incorrect mapping
+     */
+    @Test(expected = JsonParseException.class)
+    public void checkInValidStreams() throws Exception {
         generatedUrl = new APIPathBuilder("https://api.conductor.com").buildWithEndpoint(ENDPOINT_LOCATIONS, null);
         instream = new StreamBuilder(generatedUrl).getInstream();
-        List<Location> locationList = null;
         // Check if a list of Location objects is being returned
-        try {
-            locationList = mapLocationObject(instream);
-        } catch (Exception e) {
-            assertEquals(e.getClass(), JsonParseException.class);
-            assertEquals(locationList, null);
-        }
+        List<Location> locationList = mapLocationObject(instream);
     }
 
     /**
@@ -77,7 +80,7 @@ public class StreamBuilderTest {
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser jParser = jsonFactory.createJsonParser(is);
             ObjectMapper objectMapper = new ObjectMapper();
-            List<Location> locations = new ArrayList<Location>();
+            List<Location> locations = new ArrayList<>();
             // Read the json objects from stream one at a time
             while (jParser.nextToken() != JsonToken.END_ARRAY) {
                 if (jParser.getCurrentToken() == JsonToken.START_ARRAY)
@@ -86,9 +89,6 @@ public class StreamBuilderTest {
                 locations.add(objectMapper.readValue(jParser, Location.class));
             }
             return locations;
-        } catch (Exception e) {
-            System.out.println("Error in StreamBuilderTest.mapLocationObject");
-            throw e;
         } finally {
             try {
                 is.close();

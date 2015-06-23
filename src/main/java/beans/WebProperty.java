@@ -48,7 +48,7 @@ public class WebProperty {
      * @return The isActive
      */
     @JsonProperty("isActive")
-    public boolean isIsActive() {
+    public boolean isActive() {
         return isActive;
     }
 

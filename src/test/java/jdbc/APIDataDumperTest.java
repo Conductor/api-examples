@@ -1,6 +1,7 @@
 package jdbc;
 
 import beans.*;
+import com.mockrunner.mock.jdbc.MockResultSet;
 import dao.DAO;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -13,8 +14,10 @@ import streaming.APIPathBuilder;
 import streaming.StreamBuilder;
 
 import java.io.InputStream;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -25,11 +28,15 @@ public class APIDataDumperTest {
     @Mock
     DAO dao;
     @Mock
-    StreamBuilder strmBuilder;
+    StreamBuilder streamBuilder;
     @Mock
     InputStream ipStream;
     @Mock
     APIPathBuilder pathBuilderMock;
+    @Mock
+    ResultSet rs;
+    @Mock
+    ResultSet rs1;
 
     APIDataDumper dataDumper;
 
@@ -38,7 +45,7 @@ public class APIDataDumperTest {
         MockitoAnnotations.initMocks(this);
         dataDumper = new APIDataDumper("https://api.conductor.com");
         dataDumper.setDao(dao);
-        dataDumper.setStreamBuilder(strmBuilder);
+        dataDumper.setStreamBuilder(streamBuilder);
 
     }
 
@@ -48,18 +55,20 @@ public class APIDataDumperTest {
     @Test
     public void verifyInteractionWithPathBuilder() {
         dataDumper.setPathBuilder(pathBuilderMock);
-        pathBuilderMock.build("locations");
-        verify(pathBuilderMock).build("locations");
+        pathBuilderMock.buildWithEndpoint("locations", null);
+        verify(pathBuilderMock).buildWithEndpoint("locations", null);
     }
 
     /**
      * Verify interactions with getLocation method
-     * @throws Exception - SQL Exception while writing to database
+     *
+     * @throws Exception
+     *             - SQL Exception while writing to database
      */
     @Test
     public void verifyInteractionsWithGetLocationData() throws Exception {
         // create method stub
-        when(strmBuilder.buildInStream(anyString())).thenReturn(
+        when(streamBuilder.buildInStream(anyString())).thenReturn(
                 IOUtils.toInputStream("[{\n" + "    \"locationId\": \"1\",\n"
                         + "    \"description\": \"United States\"\n" + "}, {\n" + "    \"locationId\": \"2\",\n"
                         + "    \"description\": \"Canada\"\n" + "}]"));
@@ -72,12 +81,14 @@ public class APIDataDumperTest {
 
     /**
      * Verify interactions with getDevice method
-     * @throws Exception - SQL Exception while writing to database
+     *
+     * @throws Exception
+     *             - SQL Exception while writing to database
      */
     @Test
     public void verifyInteractionsWithGetDeviceData() throws Exception {
         // create method stub
-        when(strmBuilder.buildInStream(anyString())).thenReturn(
+        when(streamBuilder.buildInStream(anyString())).thenReturn(
                 IOUtils.toInputStream("[{\n" + "    \"description\": \"Desktop\",\n" + "    \"deviceId\": \"1\"\n"
                         + "}, {\n" + "    \"description\": \"Smartphone\",\n" + "    \"deviceId\": \"2\"\n" + "}, {\n"
                         + "    \"description\": \"Tablet\",\n" + "    \"deviceId\": \"3\"\n" + "}]"));
@@ -93,12 +104,14 @@ public class APIDataDumperTest {
 
     /**
      * Verify interactions with getRankSource method
-     * @throws Exception - SQL Exception while writing to database
+     *
+     * @throws Exception
+     *             - SQL Exception while writing to database
      */
     @Test
     public void verifyInteractionsWithGetRankSourceData() throws Exception {
         // create method stub
-        when(strmBuilder.buildInStream(anyString())).thenReturn(
+        when(streamBuilder.buildInStream(anyString())).thenReturn(
                 IOUtils.toInputStream("[{\n" + "    \"baseDomain\": \"google.com\",\n"
                         + "    \"description\": \"Google (US / English)\",\n" + "    \"rankSourceId\": \"1\",\n"
                         + "    \"name\": \"GOOGLE_EN_US\"\n" + "}, {\n" + "    \"baseDomain\": \"google.ca\",\n"
@@ -121,55 +134,37 @@ public class APIDataDumperTest {
 
     /**
      * Verify interactions with getWebProperty method
-     * @throws Exception - SQL Exception while writing to database
+     *
+     * @throws Exception
+     *             - SQL Exception while writing to database
      */
     @Test
     public void verifyInteractionsWithGetWebProperty() throws Exception {
         // create method stub
-        when(strmBuilder.buildInStream(contains("web-properties?apiKey")))
+        when(streamBuilder.buildInStream(contains("web-properties?apiKey")))
                 .thenReturn(
-                        IOUtils.toInputStream("[{\n" +
-                                "    \"isActive\": true,\n" +
-                                "    \"rankSourceInfo\": [],\n" +
-                                "    \"webPropertyId\": \"7\",\n" +
-                                "    \"trackedSearchList\": \"https://api.conductor.com/v3/accounts/3/web-properties/7/tracked-searches\",\n" +
-                                "    \"name\": \"adirondackchairs.com\"\n" +
-                                "}]"));
+                        IOUtils.toInputStream("[{\n"
+                                + "    \"isActive\": true,\n"
+                                + "    \"rankSourceInfo\": [],\n"
+                                + "    \"webPropertyId\": \"7\",\n"
+                                + "    \"trackedSearchList\": \"https://api.conductor.com/v3/accounts/3/web-properties/7/tracked-searches\",\n"
+                                + "    \"name\": \"adirondackchairs.com\"\n" + "}]"));
 
-        when(strmBuilder.buildInStream(contains("tracked-searches"))).thenReturn(
-                IOUtils.toInputStream("[{\n" +
-                        "    \"isActive\": true,\n" +
-                        "    \"trackedSearchId\": \"4576447\",\n" +
-                        "    \"preferredUrl\": null,\n" +
-                        "    \"queryPhrase\": \"ADIRONDACK CHAIRS\",\n" +
-                        "    \"locationId\": \"1\",\n" +
-                        "    \"rankSourceId\": \"1\",\n" +
-                        "    \"deviceId\": \"1\"\n" +
-                        "}, {\n" +
-                        "    \"isActive\": true,\n" +
-                        "    \"trackedSearchId\": \"4576448\",\n" +
-                        "    \"preferredUrl\": null,\n" +
-                        "    \"queryPhrase\": \"ADIRONDACK CHAIR\",\n" +
-                        "    \"locationId\": \"1\",\n" +
-                        "    \"rankSourceId\": \"1\",\n" +
-                        "    \"deviceId\": \"1\"\n" +
-                        "}, {\n" +
-                        "    \"isActive\": true,\n" +
-                        "    \"trackedSearchId\": \"4576449\",\n" +
-                        "    \"preferredUrl\": null,\n" +
-                        "    \"queryPhrase\": \"ADIRONDACK\",\n" +
-                        "    \"locationId\": \"1\",\n" +
-                        "    \"rankSourceId\": \"1\",\n" +
-                        "    \"deviceId\": \"1\"\n" +
-                        "}, {\n" +
-                        "    \"isActive\": true,\n" +
-                        "    \"trackedSearchId\": \"4576450\",\n" +
-                        "    \"preferredUrl\": null,\n" +
-                        "    \"queryPhrase\": \"ADIRONDACK FURNITURE\",\n" +
-                        "    \"locationId\": \"1\",\n" +
-                        "    \"rankSourceId\": \"1\",\n" +
-                        "    \"deviceId\": \"1\"\n" +
-                        "}]"));
+        when(streamBuilder.buildInStream(contains("tracked-searches"))).thenReturn(
+                IOUtils.toInputStream("[{\n" + "    \"isActive\": true,\n" + "    \"trackedSearchId\": \"4576447\",\n"
+                        + "    \"preferredUrl\": null,\n" + "    \"queryPhrase\": \"ADIRONDACK CHAIRS\",\n"
+                        + "    \"locationId\": \"1\",\n" + "    \"rankSourceId\": \"1\",\n"
+                        + "    \"deviceId\": \"1\"\n" + "}, {\n" + "    \"isActive\": true,\n"
+                        + "    \"trackedSearchId\": \"4576448\",\n" + "    \"preferredUrl\": null,\n"
+                        + "    \"queryPhrase\": \"ADIRONDACK CHAIR\",\n" + "    \"locationId\": \"1\",\n"
+                        + "    \"rankSourceId\": \"1\",\n" + "    \"deviceId\": \"1\"\n" + "}, {\n"
+                        + "    \"isActive\": true,\n" + "    \"trackedSearchId\": \"4576449\",\n"
+                        + "    \"preferredUrl\": null,\n" + "    \"queryPhrase\": \"ADIRONDACK\",\n"
+                        + "    \"locationId\": \"1\",\n" + "    \"rankSourceId\": \"1\",\n"
+                        + "    \"deviceId\": \"1\"\n" + "}, {\n" + "    \"isActive\": true,\n"
+                        + "    \"trackedSearchId\": \"4576450\",\n" + "    \"preferredUrl\": null,\n"
+                        + "    \"queryPhrase\": \"ADIRONDACK FURNITURE\",\n" + "    \"locationId\": \"1\",\n"
+                        + "    \"rankSourceId\": \"1\",\n" + "    \"deviceId\": \"1\"\n" + "}]"));
         dataDumper.getWebPropertiesData();
         // verify if correct web property data is returned
         ArgumentCaptor<WebProperty> arg = ArgumentCaptor.forClass(WebProperty.class);
@@ -185,13 +180,102 @@ public class APIDataDumperTest {
 
     /**
      * Verify interactions with getWebPropertyRankReport method
-     * @throws Exception - SQL Exception while writing to database
+     * 
+     * @throws Exception
+     *             - SQL Exception while writing to database
      */
     @Test
     public void verifyInteractionsWithGetWebPropertyRankReport() throws Exception {
+        when(dao.getRankSourceIdsFromTrackedSearch()).thenReturn(getMockResultSet());
+        // create method stub
+        when(streamBuilder.buildInStream(contains("/rank-sources/")))
+                .thenReturn(
+                        IOUtils.toInputStream("[{\n"
+                                + "    \"ranks\": {\n"
+                                + "        \"UNIVERSAL_RANK\": null,\n"
+                                + "        \"TRUE_RANK\": 7,\n"
+                                + "        \"CLASSIC_RANK\": null\n"
+                                + "    },\n"
+                                + "    \"webPropertyId\": null,\n"
+                                + "    \"trackedSearchId\": 4576447,\n"
+                                + "    \"itemType\": \"IMAGE_RESULT\",\n"
+                                + "    \"target\": \"\",\n"
+                                + "    \"targetDomainName\": \"www.cedaradirondackchairs.net\",\n"
+                                + "    \"targetUrl\": \"http://www.cedaradirondackchairs.net/images/Premium%20adirondack%20chair%20redwood%20finish.jpg\"\n"
+                                + "}, {\n"
+                                + "    \"ranks\": {\n"
+                                + "        \"UNIVERSAL_RANK\": null,\n"
+                                + "        \"TRUE_RANK\": 7,\n"
+                                + "        \"CLASSIC_RANK\": null\n"
+                                + "    },\n"
+                                + "    \"webPropertyId\": null,\n"
+                                + "    \"trackedSearchId\": 4576447,\n"
+                                + "    \"itemType\": \"IMAGE_RESULT\",\n"
+                                + "    \"target\": \"\",\n"
+                                + "    \"targetDomainName\": \"www.cedaradirondackchairs.net\",\n"
+                                + "    \"targetUrl\": \"http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg\"\n"
+                                + "}]"));
         // check if Rank Source Id data is retrieved from database
         dataDumper.getWebPropertyRankReport();
+
         verify(dao, times(1)).getRankSourceIdsFromTrackedSearch();
+
+        ArgumentCaptor<ClientWebPropertyRankReport> arg = ArgumentCaptor.forClass(ClientWebPropertyRankReport.class);
+        verify(dao, times(2)).writeToDatabase(arg.capture());
+        Assert.assertEquals(arg.getAllValues().get(1).getTrackedSearchId(), 4576447);
+        Assert.assertEquals(arg.getAllValues().get(1).getRanks().getTRUERANK(), 7);
+    }
+
+    /**
+     * Returns the given data in the form of ResultSet
+     * 
+     * @return - Resultset generated
+     * @throws Exception
+     *             - Java.Lang exception while getting resultset from mockResults
+     */
+    private ResultSet getMockResultSet() throws Exception {
+        MyResultSet myResultSet = new MyResultSet();
+        List<String> headers = new ArrayList<>();
+        headers.add("account_id");
+        headers.add("web_property_id");
+        headers.add("rank_source_id");
+
+        List<List<Object>> data = new ArrayList<>();
+
+        List<Object> objects = new ArrayList<>();
+        objects.add(3);
+        objects.add(7);
+        objects.add(1);
+        data.add(objects);
+
+        return myResultSet.getResultSet(headers, data);
+    }
+
+    // A sub class to help generate Resultset from the data
+    public class MyResultSet {
+
+        public ResultSet getResultSet(List<String> headers, List<List<Object>> data) throws Exception {
+
+            // validation
+            if (headers == null || data == null) {
+                throw new Exception("null parameters");
+            }
+
+            // create a mock result set
+            MockResultSet mockResultSet = new MockResultSet("myResultSet");
+
+            // add header
+            for (String string : headers) {
+                mockResultSet.addColumn(string);
+            }
+
+            // add data
+            for (List<Object> list : data) {
+                mockResultSet.addRow(list);
+            }
+
+            return mockResultSet;
+        }
     }
 
 }
