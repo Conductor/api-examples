@@ -6,10 +6,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by anihalani on 6/9/15.
- */
-
 @JsonPropertyOrder({ "reports", "comparisonWebProperties", "rankSourceId" })
 public class RankSourceInfo {
 

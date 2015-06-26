@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-/**
- * Created by anihalani on 6/8/15.
- */
-
 @JsonPropertyOrder({ "baseDomain", "description", "rankSourceId", "name" })
 public class RankSource {
 

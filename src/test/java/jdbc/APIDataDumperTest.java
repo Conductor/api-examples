@@ -21,7 +21,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by anihalani on 6/10/15.
+ * Created by anihalani on 6/10/15. Tests for APIDataDumper
  */
 public class APIDataDumperTest {
 
@@ -187,8 +187,8 @@ public class APIDataDumperTest {
     @Test
     public void verifyInteractionsWithGetWebPropertyRankReport() throws Exception {
         when(dao.getRankSourceIdsFromTrackedSearch()).thenReturn(getMockResultSet());
-        // create method stub
-        when(streamBuilder.buildInStream(contains("/rank-sources/")))
+        // create method stub to return rank report items
+        when(streamBuilder.buildInStream(contains("/tp/CURRENT/serp-items")))
                 .thenReturn(
                         IOUtils.toInputStream("[{\n"
                                 + "    \"ranks\": {\n"
@@ -215,15 +215,46 @@ public class APIDataDumperTest {
                                 + "    \"targetDomainName\": \"www.cedaradirondackchairs.net\",\n"
                                 + "    \"targetUrl\": \"http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg\"\n"
                                 + "}]"));
-        // check if Rank Source Id data is retrieved from database
+        // create method stub to return search volume report items
+        when(streamBuilder.buildInStream(contains("tp/CURRENT/search-volumes"))).thenReturn(
+                IOUtils.toInputStream("[{\n" + "    \"averageVolume\": 49500,\n"
+                        + "    \"trackedSearchId\": 4576447,\n" + "    \"volumeItems\": [{\n"
+                        + "        \"volume\": null,\n" + "        \"month\": 5,\n" + "        \"year\": 2015\n"
+                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 4,\n"
+                        + "        \"year\": 2015\n" + "    }, {\n" + "        \"volume\": null,\n"
+                        + "        \"month\": 3,\n" + "        \"year\": 2015\n" + "    }, {\n"
+                        + "        \"volume\": null,\n" + "        \"month\": 2,\n" + "        \"year\": 2015\n"
+                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 1,\n"
+                        + "        \"year\": 2015\n" + "    }, {\n" + "        \"volume\": null,\n"
+                        + "        \"month\": 12,\n" + "        \"year\": 2014\n" + "    }, {\n"
+                        + "        \"volume\": null,\n" + "        \"month\": 11,\n" + "        \"year\": 2014\n"
+                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 10,\n"
+                        + "        \"year\": 2014\n" + "    }, {\n" + "        \"volume\": null,\n"
+                        + "        \"month\": 9,\n" + "        \"year\": 2014\n" + "    }, {\n"
+                        + "        \"volume\": null,\n" + "        \"month\": 8,\n" + "        \"year\": 2014\n"
+                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 7,\n"
+                        + "        \"year\": 2014\n" + "    }, {\n" + "        \"volume\": null,\n"
+                        + "        \"month\": 6,\n" + "        \"year\": 2014\n" + "    }]\n" + "}]"));
+
+        ArgumentCaptor<ClientWebPropertyRankReport> rankReportArguments = ArgumentCaptor
+                .forClass(ClientWebPropertyRankReport.class);
+        ArgumentCaptor<ClientWebPropertySearchVolumeReport> searchVolumeArguments = ArgumentCaptor
+                .forClass(ClientWebPropertySearchVolumeReport.class);
         dataDumper.getWebPropertyRankReport();
-
+        // check if Rank Source Id data is retrieved from database
         verify(dao, times(1)).getRankSourceIdsFromTrackedSearch();
+        // 2 Writes for Rank Report + 1 for Search Volume + 12 for VolumeItems for 12 months
+        verify(dao, times(15)).writeToDatabase(rankReportArguments.capture());
+        verify(dao, times(15)).writeToDatabase(searchVolumeArguments.capture());
 
-        ArgumentCaptor<ClientWebPropertyRankReport> arg = ArgumentCaptor.forClass(ClientWebPropertyRankReport.class);
-        verify(dao, times(2)).writeToDatabase(arg.capture());
-        Assert.assertEquals(arg.getAllValues().get(1).getTrackedSearchId(), 4576447);
-        Assert.assertEquals(arg.getAllValues().get(1).getRanks().getTRUERANK(), 7);
+        // Verify that the expected Rank Report objects are being written to the database
+        Assert.assertEquals(rankReportArguments.getAllValues().get(14).getTrackedSearchId(), 4576447);
+        Assert.assertEquals(rankReportArguments.getAllValues().get(13).getTargetDomainName(),
+                "www.cedaradirondackchairs.net");
+        // Verify that the expected Search Volume Report objects are being written to the database
+        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getAverageVolume(), 49500);
+        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getVolumeItems().get(1).getMonth(), 4);
+        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getVolumeItems().get(1).getYear(), 2015);
     }
 
     /**
@@ -273,7 +304,6 @@ public class APIDataDumperTest {
             for (List<Object> list : data) {
                 mockResultSet.addRow(list);
             }
-
             return mockResultSet;
         }
     }

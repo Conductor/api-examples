@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by anihalani on 6/5/15.
+ * Tests for JDBCConnection
  */
 public class JDBCConnectionTest {
 

@@ -3,10 +3,6 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * Created by anihalani on 6/15/15.
- */
-
 @JsonPropertyOrder({ "ranks", "webPropertyId", "trackedSearchId", "itemType", "target", "targetDomainName", "targetUrl" })
 public class ClientWebPropertyRankReport {
 

@@ -1,8 +1,5 @@
 package beans;
 
-/**
- * Created by anihalani on 6/9/15.
- */
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

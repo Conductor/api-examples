@@ -2,20 +2,14 @@ package utils;
 
 /**
  * Created by anihalani on 5/31/15.
+ * Miscellaneous utilities used by the reco client.
  */
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
-/**
- * Miscellaneous utilities used by the reco client.
- *
- * @author anihalani
- *
- */
 public class Util {
     public static final String PROPS_FILE = "conductorAPI.properties";
 
@@ -54,7 +48,7 @@ public class Util {
                     + "?apiKey="
                     + properties.getProperty("API_KEY")
                     + "&sig="
-                    + generateSignature(properties.getProperty("API_KEY"), properties.getProperty("SHARED_SECRET"));
+                    + generateSignature(properties.getProperty("API_KEY"), properties.getProperty("SHARED_SECRET"), Math.round(System.currentTimeMillis() / 1000.0));
         } catch (NoSuchAlgorithmException e) {
             // nothing we can do about this
             throw new RuntimeException(e);
@@ -64,35 +58,19 @@ public class Util {
     /**
      * Generate api key signature as per http://developers.conductor.com/docs/Searchlight_API_Authentication_Overview
      */
-    private static String generateSignature(final String apiKey, final String sharedSecret)
+
+    static String generateSignature(final String apiKey, final String sharedSecret, final long reqEpochSec)
             throws NoSuchAlgorithmException {
-        System.gc();
-        final long curTimeEpochSeconds = Math.round(System.currentTimeMillis() / 1000.0);
-        final String stringToHash = apiKey + sharedSecret + curTimeEpochSeconds;
+        final String stringToHash = apiKey + sharedSecret + reqEpochSec;
         final MessageDigest md = MessageDigest.getInstance("MD5");
         final byte[] digestBytes = md.digest(stringToHash.getBytes());
-        // org.apache.commons.codec.binary provides similar functionality for hex encoding but can lead to dependency conflicts in large projects with many transitive dependencies
-        final String hexEncoded = String.format("%x", new BigInteger(1, digestBytes));
-        return hexEncoded;
-    }
-
-    /**
-     *Generates the final service url by concatenating all the required parameters
-     * @param apiEndpointUrl - the Conductor base API url + the endpoint parameter
-     * @return - the complete url with the API key and signature
-     */
-    public static String generateServiceUrlForWebProperties(final String apiEndpointUrl){
-        try {
-            Properties properties = readProperties(PROPS_FILE);
-            return apiEndpointUrl
-                    + "?apiKey="
-                    + properties.getProperty("API_KEY")
-                    + "&sig="
-                    + generateSignature(properties.getProperty("API_KEY"), properties.getProperty("SHARED_SECRET"));
-        } catch (NoSuchAlgorithmException e) {
-            // nothing we can do about this
-            throw new RuntimeException(e);
+        // This is ugly, but it avoids the dependence on commons.codec.binary, with which we've had classpath issues
+        final StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < digestBytes.length; i++) {
+            sb.append(Integer.toString((digestBytes[i] & 0xff) + 0x100, 16).substring(1));
         }
+        final String md5 = sb.toString();
+        return md5;
     }
 
 }

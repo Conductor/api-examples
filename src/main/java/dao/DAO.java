@@ -6,8 +6,7 @@ import jdbc.JDBCConnection;
 import java.sql.*;
 
 /**
- * Created by anihalani on 6/9/15.
- * DAO class to handle database interactions
+ * Created by anihalani on 6/9/15. DAO class to handle database interactions
  */
 public class DAO {
 
@@ -66,6 +65,12 @@ public class DAO {
                 break;
             case "beans.ClientWebPropertyRankReport":
                 preparedStmt = getWebPropertyRankReportPreparedStmt(object);
+                break;
+            case "beans.ClientWebPropertySearchVolumeReport":
+                preparedStmt = getWebPropertySearchVolumeReportStmt(object);
+                break;
+            case "beans.VolumeItem":
+                preparedStmt = getVolumePreparedStmt(object);
                 break;
             default:
                 preparedStmt = null;
@@ -226,7 +231,7 @@ public class DAO {
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, trackedSearch.getTrackedSearchId());
-        preparedStmt.setInt(2, (trackedSearch.isIsActive()==true ? 1:2));
+        preparedStmt.setInt(2, (trackedSearch.getActive() == true ? 1 : 2));
         preparedStmt.setString(3, trackedSearch.getPreferredUrl());
         preparedStmt.setString(4, trackedSearch.getQueryPhrase());
         preparedStmt.setInt(5, trackedSearch.getLocationId());
@@ -240,7 +245,7 @@ public class DAO {
      * Returns a prepared statement for inserting a row in the web_property_rank_report table
      * 
      * @param webPropRankReportObject
-     *            - a beans.WebPropertyRankReport instance wrapped in generic Java object
+     *            - a beans.ClientWebPropertyRankReport instance wrapped in generic Java object
      * @return - The prepared statement for query to insert row in web property rank report
      * @throws SQLException
      *             - if there is a problem with setting the parameters for the preparedStatement
@@ -262,6 +267,52 @@ public class DAO {
         preparedStmt.setString(7, webPropertyRankReport.getTarget());
         preparedStmt.setString(8, webPropertyRankReport.getTargetDomainName());
         preparedStmt.setString(9, webPropertyRankReport.getTargetUrl());
+        return preparedStmt;
+    }
+
+    /**
+     * Returns a prepared statement for inserting a row in the web_property_rank_report table
+     *
+     * @param webPropSearchVolObject
+     *            - a beans.ClientWebPropertySearchVolumeReport instance wrapped in generic Java object
+     * @return - The prepared statement for query to insert row in web property search volume report
+     * @throws SQLException
+     *             - if there is a problem with setting the parameters for the preparedStatement
+     */
+    private PreparedStatement getWebPropertySearchVolumeReportStmt(Object webPropSearchVolObject) throws SQLException {
+        ClientWebPropertySearchVolumeReport webPropertySearchVolumeReport = (ClientWebPropertySearchVolumeReport) webPropSearchVolObject;
+
+        // Execute a query
+        // the mysql insert statement
+        String query = "insert into client_web_property_search_volume_report (average_volume, tracked_search_id) values (?, ?)";
+
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setLong(1, webPropertySearchVolumeReport.getAverageVolume());
+        preparedStmt.setLong(2, webPropertySearchVolumeReport.getTrackedSearchId());
+        return preparedStmt;
+    }
+
+    /**
+     * Returns a prepared statement for inserting a row in the tracked_search_volume table
+     *
+     * @param volumeObject
+     *            - a beans.VolumeItem instance wrapped in generic Java object
+     * @return - The prepared statement for query to insert row in tracked_search_volume
+     * @throws SQLException
+     *             - if there is a problem with setting the parameters for the preparedStatement
+     */
+    private PreparedStatement getVolumePreparedStmt(Object volumeObject) throws SQLException {
+        VolumeItem volumeItem = (VolumeItem) volumeObject;
+
+        // Execute a query
+        // the mysql insert statement
+        String query = "insert into tracked_search_volumes (tracked_search_id, month, year, volume ) values (?, ?, ?, ?)";
+
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setLong(1, volumeItem.getTrackedSearchId());
+        preparedStmt.setInt(2, volumeItem.getMonth());
+        preparedStmt.setInt(3, volumeItem.getYear());
+        preparedStmt.setLong(4, volumeItem.getVolume());
         return preparedStmt;
     }
 

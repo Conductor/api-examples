@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by anihalani on 6/5/15.
+ * Created by anihalani on 6/5/15. StreamBuilder class to build the Input Stream from a given URL
  */
 public class StreamBuilder {
 

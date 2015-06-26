@@ -3,15 +3,11 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * Created by anihalani on 6/12/15.
- */
-
 @JsonPropertyOrder({ "isActive", "trackedSearchId", "preferredUrl", "queryPhrase", "locationId", "rankSourceId",
         "deviceId" })
 public class TrackedSearch {
 
-    private boolean isActive;
+    private boolean active;
     private int trackedSearchId;
     private String preferredUrl;
     private String queryPhrase;
@@ -22,20 +18,20 @@ public class TrackedSearch {
 
     /**
      *
-     * @return The isActive
+     * @return The active
      */
     @JsonProperty("isActive")
-    public boolean isIsActive() {
-        return isActive;
+    public boolean getActive() {
+        return active;
     }
 
     /**
      *
-     * @param isActive
-     *            The isActive
+     * @param active
+     *            The active
      */
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     /**
@@ -174,7 +170,7 @@ public class TrackedSearch {
 
         TrackedSearch that = (TrackedSearch) o;
 
-        if (isActive != that.isActive)
+        if (active != that.active)
             return false;
         if (trackedSearchId != that.trackedSearchId)
             return false;
@@ -194,7 +190,7 @@ public class TrackedSearch {
 
     @Override
     public int hashCode() {
-        int result = (isActive ? 1 : 0);
+        int result = (active ? 1 : 0);
         result = 31 * result + trackedSearchId;
         result = 31 * result + (preferredUrl != null ? preferredUrl.hashCode() : 0);
         result = 31 * result + (queryPhrase != null ? queryPhrase.hashCode() : 0);

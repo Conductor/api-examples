@@ -17,11 +17,9 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Created by anihalani on 6/9/15.
- * DataDUmper class to stream endpoint data and interact with DAO
+ * Created by anihalani on 6/9/15. DataDumper class to stream endpoint data and interact with DAO
  */
 public class APIDataDumper {
-
 
     private static final String ENDPOINT_ACCOUNTS = "accounts";
     private static final String ENDPOINT_LOCATIONS = "locations";
@@ -52,7 +50,7 @@ public class APIDataDumper {
 
     /**
      * StreamBuilder Setter
-     * 
+     *
      * @param streamBuilder
      *            - the streamBuilder instance to be set to
      */
@@ -62,7 +60,7 @@ public class APIDataDumper {
 
     /**
      * Constructor to create an instance of API Path Builder
-     * 
+     *
      * @param url
      *            - The Conductor API baseUrl
      */
@@ -74,7 +72,7 @@ public class APIDataDumper {
 
     /**
      * Sets the APIPathBuilder property for the class
-     * 
+     *
      * @param pathBuilder
      *            - The APIPathBuilder instance
      */
@@ -165,6 +163,8 @@ public class APIDataDumper {
                     webPropertyRankReportUrl = pathBuilder.addEndPointWithValue(webPropertyRankReportUrl,
                             "rank-sources", Integer.toString(rs.getInt("rank_source_id")));
 
+                    writeSearchVolumeData(webPropertyRankReportUrl);
+
                     webPropertyRankReportUrl = webPropertyRankReportUrl.concat("/tp/CURRENT/serp-items");
 
                     webPropertyRankReportUrl = pathBuilder.addKeyAndSignature(webPropertyRankReportUrl);
@@ -182,13 +182,24 @@ public class APIDataDumper {
             try {
                 if (rs != null) {
                     rs.close();
-                    // rs.getStatement().close();
                 }
             } catch (SQLException e) {
                 System.out.println("Error while closing ResultSet/Statement in getWebPropertyDataReport");
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Gets data from the searchVolume Endpoint of the API
+     * 
+     * @param urlPath
+     *            - The url Path containing the accountId, webPropertyId and rankSourceId
+     */
+    private void writeSearchVolumeData(String urlPath) {
+        String webPropertySearchVolumeUrl = urlPath.concat("/tp/CURRENT/search-volumes");
+        webPropertySearchVolumeUrl = pathBuilder.addKeyAndSignature(webPropertySearchVolumeUrl);
+        writeObjects(webPropertySearchVolumeUrl, ClientWebPropertySearchVolumeReport.class);
     }
 
     /**
@@ -227,14 +238,21 @@ public class APIDataDumper {
                 } else if (object instanceof TrackedSearch) {
                     ((TrackedSearch) object).setWebPropertyId(getWebPropertyIdFromUrl(url));
                     dao.writeToDatabase(object);
+                } else if (object instanceof ClientWebPropertySearchVolumeReport) {
+                    for (VolumeItem volumeItem : ((ClientWebPropertySearchVolumeReport) object).getVolumeItems()) {
+                        volumeItem.setTrackedSearchId(((ClientWebPropertySearchVolumeReport) object)
+                                .getTrackedSearchId());
+                        dao.writeToDatabase(volumeItem);
+                    }
+                    dao.writeToDatabase(object);
                 } else {
                     dao.writeToDatabase(object);
                 }
             }
         } catch (Exception e) {
             System.out.println("Error in writeObjects");
-            System.out.println(url);
             e.printStackTrace();
+            System.out.println(url);
         } finally {
             try {
                 if (instream != null) {
@@ -242,7 +260,6 @@ public class APIDataDumper {
                 }
             } catch (IOException e) {
                 System.out.println("Error while closing stream in writeObjects");
-                System.out.println(url);
                 e.printStackTrace();
             }
         }

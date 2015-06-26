@@ -3,10 +3,6 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * Created by anihalani on 6/9/15.
- */
-
 @JsonPropertyOrder({ "label", "name", "webPropertyId" })
 public class ComparisonWebProperty {
 
