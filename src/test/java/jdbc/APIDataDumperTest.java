@@ -43,7 +43,7 @@ public class APIDataDumperTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        dataDumper = new APIDataDumper("https://nocache-origin.conductor.com");
+        dataDumper = new APIDataDumper("https://api.conductor.com");
         dataDumper.setDao(dao);
         dataDumper.setStreamBuilder(streamBuilder);
 

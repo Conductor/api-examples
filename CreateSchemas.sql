@@ -1,4 +1,4 @@
-use test;
+use <<YOUR_DB_NAME>>;
 
  CREATE TABLE IF NOT EXISTS `device` (
    `device_id` int(11) NOT NULL,
