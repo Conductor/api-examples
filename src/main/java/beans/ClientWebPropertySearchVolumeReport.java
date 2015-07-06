@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created by anihalani on 6/25/15.
- * Client Web Property Search Volume Report Class to map JSON data returned from searchVolume endPoint
+ * Client Web Property Search Volume Report Class to map JSON data returned from Search Volume endpoint
  */
 
 @JsonPropertyOrder({ "averageVolume", "trackedSearchId", "volumeItems" })

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Created by anihalani on 6/25/15.
- * Client Web Property Rank Report Class to map JSON data returned from rankReports endPoint
+ * Client Web Property Rank Report Class to map JSON data returned from Rank Report endpoint
  */
 
 @JsonPropertyOrder({ "ranks", "webPropertyId", "trackedSearchId", "itemType", "target", "targetDomainName", "targetUrl" })

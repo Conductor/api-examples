@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Created by anihalani on 6/9/15.
- * Comparison Web Property class to map JSON object of type Comparison web properties
+ * Comparison Web Property class to map JSON object of type Comparison Web Properties
  */
 
 @JsonPropertyOrder({ "label", "name", "webPropertyId" })

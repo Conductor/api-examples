@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Created by anihalani on 6/25/15.
- * Reports Class to map Reports data returned from with WebProperties objects
+ * Reports Class to map Reports data returned within Web Properties objects
  */
 
-@JsonPropertyOrder({ "TimePeriod" })
+@JsonPropertyOrder({ "timePeriod" })
 public class Reports {
 
-    private TimePeriod TimePeriod;
+    private TimePeriod timePeriod;
 
     @Override
     public boolean equals(Object o) {
@@ -22,31 +22,31 @@ public class Reports {
 
         Reports reports = (Reports) o;
 
-        return !(TimePeriod != null ? !TimePeriod.equals(reports.TimePeriod) : reports.TimePeriod != null);
+        return !(timePeriod != null ? !timePeriod.equals(reports.timePeriod) : reports.timePeriod != null);
 
     }
 
     @Override
     public int hashCode() {
-        return TimePeriod != null ? TimePeriod.hashCode() : 0;
+        return timePeriod != null ? timePeriod.hashCode() : 0;
     }
 
     /**
      *
-     * @return The TimePeriod
+     * @return The timePeriod
      */
     @JsonProperty("CURRENT")
     public TimePeriod getTimePeriod() {
-        return TimePeriod;
+        return timePeriod;
     }
 
     /**
      *
      * @param timePeriod
-     *            The TimePeriod
+     *            The timePeriod
      */
     public void setTimePeriod(TimePeriod timePeriod) {
-        this.TimePeriod = timePeriod;
+        this.timePeriod = timePeriod;
     }
 
 }

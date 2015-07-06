@@ -188,17 +188,17 @@ public class APIDataDumper {
      *            - the complete url with the endpoint parameter, the API key and the signature
      * @param cl
      *            - the class of the objects expected to be returned in the Json
-     * @param rankReportTransformer
+     * @param beanDataTransformer
      *            - The Transformer function used to add endDate in the Rank Report objects
      */
-    private void writeObjects(String url, Class cl, Function<Object, Object> rankReportTransformer) {
-        InputStream instream = null;
+    private void writeObjects(String url, Class cl, Function<Object, Object> beanDataTransformer) {
+        InputStream inStream = null;
 
         try {
 
-            instream = streamBuilder.buildInStream(url);
+            inStream = streamBuilder.buildInStream(url);
             JsonFactory jsonFactory = new JsonFactory();
-            JsonParser jParser = jsonFactory.createJsonParser(instream);
+            JsonParser jParser = jsonFactory.createJsonParser(inStream);
             ObjectMapper objectMapper = new ObjectMapper();
             // Read the json objects from stream one at a time
             while (jParser.nextToken() != JsonToken.END_ARRAY) {
@@ -207,6 +207,10 @@ public class APIDataDumper {
                 }
                 // Read an object and write it to Database
                 Object object = objectMapper.readValue(jParser, cl);
+
+                if (beanDataTransformer != null) {
+                    object = beanDataTransformer.apply(object);
+                }
 
                 // Write the comparison web properties and the tracked search data for each web property
                 if (object instanceof WebProperty) {
@@ -229,8 +233,7 @@ public class APIDataDumper {
                     }
                     dao.writeToDatabase(object);
                 } else if (object instanceof ClientWebPropertyRankReport) {
-                    Object transformedRankReport = rankReportTransformer.apply(object);
-                    dao.writeToDatabase(transformedRankReport);
+                    dao.writeToDatabase(object);
                 } else {
                     dao.writeToDatabase(object);
                 }
@@ -239,8 +242,8 @@ public class APIDataDumper {
             throw new RuntimeException(String.format("Exception occurred in DatDumper.writeObjects for url %s", url), e);
         } finally {
             try {
-                if (instream != null) {
-                    instream.close();
+                if (inStream != null) {
+                    inStream.close();
                 }
             } catch (IOException e) {
                 System.out.println("Error while closing stream in writeObjects");

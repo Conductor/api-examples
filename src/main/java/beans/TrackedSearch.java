@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Created by anihalani on 6/15/15.
- * TrackedSearch Class to map JSON data returned from TrackedSearch endPoint
+ * Tracked Search Class to map JSON data returned from Tracked Search endpoint
  */
 
 @JsonPropertyOrder({ "isActive", "trackedSearchId", "preferredUrl", "queryPhrase", "locationId", "rankSourceId",

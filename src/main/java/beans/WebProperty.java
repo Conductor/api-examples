@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created by anihalani on 6/15/15.
- *  Web Property  Class to map JSON data returned from webProperties endPoint
+ *  Web Property Class to map JSON data returned from Web Properties endpoint
  */
 
 @JsonPropertyOrder({ "isActive", "rankSourceInfo", "webPropertyId", "trackedSearchList", "name" })

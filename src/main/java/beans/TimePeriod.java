@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Created by anihalani on 6/9/15.
- * Time Period class to MAP information related to Time period in the Web Property object
+ * Time Period class to MAP information related to Time Period in the Web Property object
  */
 @JsonPropertyOrder({ "startDate", "endDate", "webPropertySearchVolumeReport", "webPropertyRankReport", "timePeriodId" })
 public class TimePeriod {

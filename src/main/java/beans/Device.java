@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Created by anihalani on 6/8/15.
- * Device Class to map JSON data returned from Device endPoint
+ * Device Class to map JSON data returned from Device endpoint
  */
 
 @JsonPropertyOrder({ "description", "deviceId" })

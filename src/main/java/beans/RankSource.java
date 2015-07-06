@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Created by anihalani on 6/25/15.
- * RankSource Class to map JSON data returned by RankSource endpoint
+ * Rank Source Class to map JSON data returned by Rank Source endpoint
  */
 @JsonPropertyOrder({ "baseDomain", "description", "rankSourceId", "name" })
 public class RankSource {
