@@ -43,7 +43,7 @@ public class APIDataDumperTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        dataDumper = new APIDataDumper("https://api.conductor.com");
+        dataDumper = new APIDataDumper("https://nocache-origin.conductor.com");
         dataDumper.setDao(dao);
         dataDumper.setStreamBuilder(streamBuilder);
 
@@ -140,16 +140,41 @@ public class APIDataDumperTest {
      */
     @Test
     public void verifyInteractionsWithGetWebProperty() throws Exception {
-        // create method stub
+        // Method stub to return a web Web Property with 3 Comparison Web Properties
         when(streamBuilder.buildInStream(contains("web-properties?apiKey")))
                 .thenReturn(
                         IOUtils.toInputStream("[{\n"
                                 + "    \"isActive\": true,\n"
-                                + "    \"rankSourceInfo\": [],\n"
-                                + "    \"webPropertyId\": \"7\",\n"
-                                + "    \"trackedSearchList\": \"https://api.conductor.com/v3/accounts/3/web-properties/7/tracked-searches\",\n"
-                                + "    \"name\": \"adirondackchairs.com\"\n" + "}]"));
+                                + "    \"rankSourceInfo\": [{\n"
+                                + "        \"reports\": {\n"
+                                + "            \"CURRENT\": {\n"
+                                + "                \"startDate\": \"2015-06-21T00:00:00.000Z\",\n"
+                                + "                \"endDate\": \"2015-06-27T23:59:59.000Z\",\n"
+                                + "                \"webPropertySearchVolumeReport\": \"https://api.conductor.com/v3/4/web-properties/215/rank-sources/1/tp/CURRENT/search-volumes\",\n"
+                                + "                \"webPropertyRankReport\": \"https://api.conductor.com/v3/4/web-properties/215/rank-sources/1/tp/CURRENT/serp-items\",\n"
+                                + "                \"timePeriodId\": \"309\"\n"
+                                + "            }\n"
+                                + "        },\n"
+                                + "        \"comparisonWebProperties\": [{\n"
+                                + "            \"label\": \"Competitor\",\n"
+                                + "            \"name\": \"3ds.com\",\n"
+                                + "            \"webPropertyId\": \"219\"\n"
+                                + "        }, {\n"
+                                + "            \"label\": \"\",\n"
+                                + "            \"name\": \"camstar-tv.com\",\n"
+                                + "            \"webPropertyId\": \"47172\"\n"
+                                + "        }, {\n"
+                                + "            \"label\": null,\n"
+                                + "            \"name\": \"ptc.com\",\n"
+                                + "            \"webPropertyId\": \"218\"\n"
+                                + "        }],\n"
+                                + "        \"rankSourceId\": \"1\"\n"
+                                + "    }],\n"
+                                + "    \"webPropertyId\": \"215\",\n"
+                                + "    \"trackedSearchList\": \"https://api.conductor.com/v3/accounts/4/web-properties/215/tracked-searches\",\n"
+                                + "    \"name\": \"plm.automation.siemens.com\"\n" + "}]"));
 
+        // Method stub to return 2 tracked searches when buildInStream is called
         when(streamBuilder.buildInStream(contains("tracked-searches"))).thenReturn(
                 IOUtils.toInputStream("[{\n" + "    \"isActive\": true,\n" + "    \"trackedSearchId\": \"4576447\",\n"
                         + "    \"preferredUrl\": null,\n" + "    \"queryPhrase\": \"ADIRONDACK CHAIRS\",\n"
@@ -157,37 +182,9 @@ public class APIDataDumperTest {
                         + "    \"deviceId\": \"1\"\n" + "}, {\n" + "    \"isActive\": true,\n"
                         + "    \"trackedSearchId\": \"4576448\",\n" + "    \"preferredUrl\": null,\n"
                         + "    \"queryPhrase\": \"ADIRONDACK CHAIR\",\n" + "    \"locationId\": \"1\",\n"
-                        + "    \"rankSourceId\": \"1\",\n" + "    \"deviceId\": \"1\"\n" + "}, {\n"
-                        + "    \"isActive\": true,\n" + "    \"trackedSearchId\": \"4576449\",\n"
-                        + "    \"preferredUrl\": null,\n" + "    \"queryPhrase\": \"ADIRONDACK\",\n"
-                        + "    \"locationId\": \"1\",\n" + "    \"rankSourceId\": \"1\",\n"
-                        + "    \"deviceId\": \"1\"\n" + "}, {\n" + "    \"isActive\": true,\n"
-                        + "    \"trackedSearchId\": \"4576450\",\n" + "    \"preferredUrl\": null,\n"
-                        + "    \"queryPhrase\": \"ADIRONDACK FURNITURE\",\n" + "    \"locationId\": \"1\",\n"
                         + "    \"rankSourceId\": \"1\",\n" + "    \"deviceId\": \"1\"\n" + "}]"));
-        dataDumper.getWebPropertiesData();
-        // verify if correct web property data is returned
-        ArgumentCaptor<WebProperty> arg = ArgumentCaptor.forClass(WebProperty.class);
-        verify(dao, times(5)).writeToDatabase(arg.capture());
-        Assert.assertEquals(arg.getAllValues().get(0).getWebPropertyId(), 7);
 
-        // Verify if correct tracked search data is returned
-        ArgumentCaptor<TrackedSearch> argTrackedSearch = ArgumentCaptor.forClass(TrackedSearch.class);
-        verify(dao, times(5)).writeToDatabase(argTrackedSearch.capture());
-        Assert.assertEquals(argTrackedSearch.getAllValues().get(1).getTrackedSearchId(), 4576447);
-
-    }
-
-    /**
-     * Verify interactions with getWebPropertyRankReport method
-     * 
-     * @throws Exception
-     *             - SQL Exception while writing to database
-     */
-    @Test
-    public void verifyInteractionsWithGetWebPropertyRankReport() throws Exception {
-        when(dao.getRankSourceIdsFromTrackedSearch()).thenReturn(getMockResultSet());
-        // create method stub to return rank report items
+        // create method stub to return 2 rank report items
         when(streamBuilder.buildInStream(contains("/tp/CURRENT/serp-items")))
                 .thenReturn(
                         IOUtils.toInputStream("[{\n"
@@ -215,52 +212,50 @@ public class APIDataDumperTest {
                                 + "    \"targetDomainName\": \"www.cedaradirondackchairs.net\",\n"
                                 + "    \"targetUrl\": \"http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg\"\n"
                                 + "}]"));
-        // create method stub to return search volume report items
+        // create method stub to return 1 search volume report item with 2 Volume items
         when(streamBuilder.buildInStream(contains("tp/CURRENT/search-volumes"))).thenReturn(
                 IOUtils.toInputStream("[{\n" + "    \"averageVolume\": 49500,\n"
                         + "    \"trackedSearchId\": 4576447,\n" + "    \"volumeItems\": [{\n"
                         + "        \"volume\": null,\n" + "        \"month\": 5,\n" + "        \"year\": 2015\n"
                         + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 4,\n"
-                        + "        \"year\": 2015\n" + "    }, {\n" + "        \"volume\": null,\n"
-                        + "        \"month\": 3,\n" + "        \"year\": 2015\n" + "    }, {\n"
-                        + "        \"volume\": null,\n" + "        \"month\": 2,\n" + "        \"year\": 2015\n"
-                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 1,\n"
-                        + "        \"year\": 2015\n" + "    }, {\n" + "        \"volume\": null,\n"
-                        + "        \"month\": 12,\n" + "        \"year\": 2014\n" + "    }, {\n"
-                        + "        \"volume\": null,\n" + "        \"month\": 11,\n" + "        \"year\": 2014\n"
-                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 10,\n"
-                        + "        \"year\": 2014\n" + "    }, {\n" + "        \"volume\": null,\n"
-                        + "        \"month\": 9,\n" + "        \"year\": 2014\n" + "    }, {\n"
-                        + "        \"volume\": null,\n" + "        \"month\": 8,\n" + "        \"year\": 2014\n"
-                        + "    }, {\n" + "        \"volume\": null,\n" + "        \"month\": 7,\n"
-                        + "        \"year\": 2014\n" + "    }, {\n" + "        \"volume\": null,\n"
-                        + "        \"month\": 6,\n" + "        \"year\": 2014\n" + "    }]\n" + "}]"));
+                        + "        \"year\": 2015\n" + "    }]\n" + "}]"));
 
-        ArgumentCaptor<ClientWebPropertyRankReport> rankReportArguments = ArgumentCaptor
-                .forClass(ClientWebPropertyRankReport.class);
-        ArgumentCaptor<ClientWebPropertySearchVolumeReport> searchVolumeArguments = ArgumentCaptor
-                .forClass(ClientWebPropertySearchVolumeReport.class);
-        dataDumper.getWebPropertyRankReport();
-        // check if Rank Source Id data is retrieved from database
-        verify(dao, times(1)).getRankSourceIdsFromTrackedSearch();
-        // 2 Writes for Rank Report + 1 for Search Volume + 12 for VolumeItems for 12 months
-        verify(dao, times(15)).writeToDatabase(rankReportArguments.capture());
-        verify(dao, times(15)).writeToDatabase(searchVolumeArguments.capture());
+        dataDumper.getWebPropertiesData();
+        // verify if correct web property data is returned
+        ArgumentCaptor<WebProperty> arg = ArgumentCaptor.forClass(WebProperty.class);
+        // A total of 11 objects are written to the database
+        // 1 WebProperty, 3 Comparison WebProperties, 2 TrackSearches, 2 Rank Reports, 1 SearchVolume and 2 Volumes
+        verify(dao, times(11)).writeToDatabase(arg.capture());
+        Assert.assertEquals(arg.getAllValues().get(0).getWebPropertyId(), 215);
 
-        // Verify that the expected Rank Report objects are being written to the database
-        Assert.assertEquals(rankReportArguments.getAllValues().get(14).getTrackedSearchId(), 4576447);
-        Assert.assertEquals(rankReportArguments.getAllValues().get(13).getTargetDomainName(),
-                "www.cedaradirondackchairs.net");
-        // Verify that the expected Search Volume Report objects are being written to the database
-        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getAverageVolume(), 49500);
-        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getVolumeItems().get(1).getMonth(), 4);
-        Assert.assertEquals(searchVolumeArguments.getAllValues().get(12).getVolumeItems().get(1).getYear(), 2015);
+        // Verify if correct Comparison Web Property data is returned
+        ArgumentCaptor<ComparisonWebProperty> comparisonWebPropertyArgumentCaptor = ArgumentCaptor.forClass(ComparisonWebProperty.class);
+        verify(dao, times(11)).writeToDatabase(comparisonWebPropertyArgumentCaptor.capture());
+        Assert.assertEquals(comparisonWebPropertyArgumentCaptor.getAllValues().get(1).getWebPropertyId(), 219);
+
+        // Verify if correct tracked search data is returned
+        ArgumentCaptor<TrackedSearch> trackedSearchArgumentCaptor = ArgumentCaptor.forClass(TrackedSearch.class);
+        verify(dao, times(11)).writeToDatabase(trackedSearchArgumentCaptor.capture());
+        Assert.assertEquals(trackedSearchArgumentCaptor.getAllValues().get(4).getTrackedSearchId(), 4576447);
+
+        // Verify if correct Search Volume data is returned
+        ArgumentCaptor<ClientWebPropertySearchVolumeReport> clientWebPropertySearchVolumeReportArgumentCaptor = ArgumentCaptor.forClass(ClientWebPropertySearchVolumeReport.class);
+        verify(dao, times(11)).writeToDatabase(clientWebPropertySearchVolumeReportArgumentCaptor.capture());
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems().get(0).getYear(), 2015);
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems().get(1).getMonth(), 4);
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getAverageVolume(), 49500);
+
+        // Verify if correct Rank Report data is returned
+        ArgumentCaptor<ClientWebPropertyRankReport> clientWebPropertyRankReportArgumentCaptor = ArgumentCaptor.forClass(ClientWebPropertyRankReport.class);
+        verify(dao, times(11)).writeToDatabase(clientWebPropertyRankReportArgumentCaptor.capture());
+        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(9).getTargetDomainName(), "www.cedaradirondackchairs.net");
+        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(10).getTargetUrl(), "http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg");
     }
 
     /**
      * Returns the given data in the form of ResultSet
      * 
-     * @return - Resultset generated
+     * @return - ResultSet generated
      * @throws Exception
      *             - Java.Lang exception while getting resultset from mockResults
      */
@@ -282,7 +277,7 @@ public class APIDataDumperTest {
         return myResultSet.getResultSet(headers, data);
     }
 
-    // A sub class to help generate Resultset from the data
+    // A sub class to help generate ResultSet from the data
     public class MyResultSet {
 
         public ResultSet getResultSet(List<String> headers, List<List<Object>> data) throws Exception {

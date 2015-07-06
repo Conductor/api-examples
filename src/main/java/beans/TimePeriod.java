@@ -3,9 +3,12 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
+/**
+ * Created by anihalani on 6/9/15.
+ * Time Period class to MAP information related to Time period in the Web Property object
+ */
 @JsonPropertyOrder({ "startDate", "endDate", "webPropertySearchVolumeReport", "webPropertyRankReport", "timePeriodId" })
-public class Current {
+public class TimePeriod {
 
     private String startDate;
     private String endDate;
@@ -108,15 +111,15 @@ public class Current {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Current current = (Current) o;
+        TimePeriod timePeriod = (TimePeriod) o;
 
-        if (startDate != null ? !startDate.equals(current.startDate) : current.startDate != null) return false;
-        if (endDate != null ? !endDate.equals(current.endDate) : current.endDate != null) return false;
-        if (webPropertySearchVolumeReport != null ? !webPropertySearchVolumeReport.equals(current.webPropertySearchVolumeReport) : current.webPropertySearchVolumeReport != null)
+        if (startDate != null ? !startDate.equals(timePeriod.startDate) : timePeriod.startDate != null) return false;
+        if (endDate != null ? !endDate.equals(timePeriod.endDate) : timePeriod.endDate != null) return false;
+        if (webPropertySearchVolumeReport != null ? !webPropertySearchVolumeReport.equals(timePeriod.webPropertySearchVolumeReport) : timePeriod.webPropertySearchVolumeReport != null)
             return false;
-        if (webPropertyRankReport != null ? !webPropertyRankReport.equals(current.webPropertyRankReport) : current.webPropertyRankReport != null)
+        if (webPropertyRankReport != null ? !webPropertyRankReport.equals(timePeriod.webPropertyRankReport) : timePeriod.webPropertyRankReport != null)
             return false;
-        return !(timePeriodId != null ? !timePeriodId.equals(current.timePeriodId) : current.timePeriodId != null);
+        return !(timePeriodId != null ? !timePeriodId.equals(timePeriod.timePeriodId) : timePeriod.timePeriodId != null);
 
     }
 

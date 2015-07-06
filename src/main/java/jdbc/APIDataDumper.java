@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import dao.DAO;
 import streaming.APIPathBuilder;
 import streaming.StreamBuilder;
@@ -12,13 +14,12 @@ import utils.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
  * Created by anihalani on 6/9/15. DataDumper class to stream endpoint data and interact with DAO
  */
+
 public class APIDataDumper {
 
     private static final String ENDPOINT_ACCOUNTS = "accounts";
@@ -34,9 +35,15 @@ public class APIDataDumper {
     /**
      * Closes JDBC Connection
      */
-
     public void closeConnection() {
         dao.closeConnection();
+    }
+
+    /**
+     * Commits the SQL Transaction
+     */
+    public void commit() {
+        dao.commit();
     }
 
     /**
@@ -135,7 +142,7 @@ public class APIDataDumper {
      * Gets the Tracked Search data returned from the API endpoint
      */
     public void writeTrackedSearchData(String urlWithoutSig) {
-        if (urlWithoutSig != null && !urlWithoutSig.equals("")) {
+        if (!Strings.isNullOrEmpty(urlWithoutSig)) {
             String trackedSearchUrl = pathBuilder.addKeyAndSignature(urlWithoutSig);
             writeObjects(trackedSearchUrl, TrackedSearch.class);
         }
@@ -145,72 +152,46 @@ public class APIDataDumper {
      * Generates URl by getting Account id, Web-Property id and Rank Source id from database and gets the Web Property
      * Rank Report data from API endpoints.
      */
-    public void getWebPropertyRankReport() {
-        ResultSet rs = dao.getRankSourceIdsFromTrackedSearch();
+    public void getWebPropertyRankReport(WebProperty webProperty) throws RuntimeException {
+        String rankReportContext, volumeContext;
+        for (RankSourceInfo rankSourceInfo : webProperty.getRankSourceInfo()) {
+            rankSourceInfo.getReports().getTimePeriod();
+            volumeContext = rankSourceInfo.getReports().getTimePeriod().getWebPropertySearchVolumeReport();
+            rankReportContext = rankSourceInfo.getReports().getTimePeriod().getWebPropertyRankReport();
+            writeSearchVolumeData(volumeContext);
+            String webPropertyRankReportUrl = pathBuilder.addKeyAndSignature(rankReportContext);
 
-        try {
-            if (rs != null) {
-                rs.beforeFirst();
+            Function<Object, Object> timePeriodAddingFunction = o -> {
+                ((ClientWebPropertyRankReport) o).setEndDate(rankSourceInfo.getReports().getTimePeriod().getEndDate());
+                return o;
+            };
 
-                while (rs.next()) {
-                    Thread.sleep(1000);
-                    String webPropertyRankReportUrl = pathBuilder.buildWithEndpoint(null,
-                            Integer.toString(rs.getInt("account_id")));
-
-                    webPropertyRankReportUrl = pathBuilder.addEndPointWithValue(webPropertyRankReportUrl,
-                            "web-properties", Integer.toString(rs.getInt("web_property_id")));
-
-                    webPropertyRankReportUrl = pathBuilder.addEndPointWithValue(webPropertyRankReportUrl,
-                            "rank-sources", Integer.toString(rs.getInt("rank_source_id")));
-
-                    writeSearchVolumeData(webPropertyRankReportUrl);
-
-                    webPropertyRankReportUrl = webPropertyRankReportUrl.concat("/tp/CURRENT/serp-items");
-
-                    webPropertyRankReportUrl = pathBuilder.addKeyAndSignature(webPropertyRankReportUrl);
-
-                    writeObjects(webPropertyRankReportUrl, ClientWebPropertyRankReport.class);
-
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error in APIDataDumper.getWebPropertyRankReport");
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error while closing ResultSet/Statement in getWebPropertyDataReport");
-                e.printStackTrace();
-            }
+            writeObjects(webPropertyRankReportUrl, ClientWebPropertyRankReport.class, timePeriodAddingFunction);
         }
     }
 
     /**
      * Gets data from the searchVolume Endpoint of the API
      * 
-     * @param urlPath
+     * @param url
      *            - The url Path containing the accountId, webPropertyId and rankSourceId
      */
-    private void writeSearchVolumeData(String urlPath) {
-        String webPropertySearchVolumeUrl = urlPath.concat("/tp/CURRENT/search-volumes");
-        webPropertySearchVolumeUrl = pathBuilder.addKeyAndSignature(webPropertySearchVolumeUrl);
-        writeObjects(webPropertySearchVolumeUrl, ClientWebPropertySearchVolumeReport.class);
+    private void writeSearchVolumeData(String url) {
+        writeObjects(pathBuilder.addKeyAndSignature(url), ClientWebPropertySearchVolumeReport.class);
     }
 
     /**
+     *
      * Streams data from an endpoint one object at a time and writes it to the local database
-     * 
+     *
      * @param url
      *            - the complete url with the endpoint parameter, the API key and the signature
      * @param cl
      *            - the class of the objects expected to be returned in the Json
+     * @param rankReportTransformer
+     *            - The Transformer function used to add endDate in the Rank Report objects
      */
-    private void writeObjects(String url, Class cl) {
+    private void writeObjects(String url, Class cl, Function<Object, Object> rankReportTransformer) {
         InputStream instream = null;
 
         try {
@@ -232,9 +213,11 @@ public class APIDataDumper {
                     ((WebProperty) object).setAccountId(getAccountIdFromUrl(url));
                     dao.writeToDatabase(object);
                     Thread.sleep(1000);
-                    writeComparisionWebProperties((WebProperty) object, dao);
+                    writeComparisonWebProperties((WebProperty) object);
                     Thread.sleep(1000);
                     writeTrackedSearchData(((WebProperty) object).getTrackedSearchList());
+                    Thread.sleep(1000);
+                    getWebPropertyRankReport(((WebProperty) object));
                 } else if (object instanceof TrackedSearch) {
                     ((TrackedSearch) object).setWebPropertyId(getWebPropertyIdFromUrl(url));
                     dao.writeToDatabase(object);
@@ -245,14 +228,15 @@ public class APIDataDumper {
                         dao.writeToDatabase(volumeItem);
                     }
                     dao.writeToDatabase(object);
+                } else if (object instanceof ClientWebPropertyRankReport) {
+                    Object transformedRankReport = rankReportTransformer.apply(object);
+                    dao.writeToDatabase(transformedRankReport);
                 } else {
                     dao.writeToDatabase(object);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error in writeObjects");
-            e.printStackTrace();
-            System.out.println(url);
+            throw new RuntimeException(String.format("Exception occurred in DatDumper.writeObjects for url %s", url), e);
         } finally {
             try {
                 if (instream != null) {
@@ -267,6 +251,18 @@ public class APIDataDumper {
     }
 
     /**
+     * Streams data from an endpoint one object at a time and writes it to the local database
+     *
+     * @param url
+     *            - the complete url with the endpoint parameter, the API key and the signature
+     * @param cl
+     *            - the class of the objects expected to be returned in the Json
+     */
+    private void writeObjects(String url, Class cl) {
+        writeObjects(url, cl, null);
+    }
+
+    /**
      * Writes the comparison web properties for a given web property
      * 
      * @param webProperty
@@ -274,7 +270,7 @@ public class APIDataDumper {
      * @throws Exception
      *             - if connection is null and Exception is thrown from DAO.writeToDatabase
      */
-    private void writeComparisionWebProperties(WebProperty webProperty, DAO dao) throws Exception {
+    private void writeComparisonWebProperties(WebProperty webProperty) throws Exception {
         for (RankSourceInfo rankSourceInfo : webProperty.getRankSourceInfo()) {
             for (ComparisonWebProperty comparisonWebProperty : rankSourceInfo.getComparisonWebProperties()) {
                 dao.writeToDatabase(comparisonWebProperty);
@@ -286,7 +282,7 @@ public class APIDataDumper {
      * Extracts and returns the account-id used in the web-property endpoint Url
      * 
      * @param url
-     *            - The comple URL for Web-Property endpoint
+     *            - The complete URL for Web-Property endpoint
      * @return - The accountId from the URL
      */
     private int getAccountIdFromUrl(String url) {

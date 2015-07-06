@@ -7,8 +7,10 @@ import java.sql.DriverManager;
 import java.util.Properties;
 
 /**
- * Created by anihalani on 5/29/15. JDBC class to create and manage the JDBC Connection
+ * Created by anihalani on 5/29/15.
+ * JDBC class to create and manage the JDBC Connection
  */
+
 public class JDBCConnection {
     public static final Properties properties = Util.readProperties(Util.PROPS_FILE);
     public static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";

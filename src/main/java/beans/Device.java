@@ -4,6 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+/**
+ * Created by anihalani on 6/8/15.
+ * Device Class to map JSON data returned from Device endPoint
+ */
+
 @JsonPropertyOrder({ "description", "deviceId" })
 public class Device {
 

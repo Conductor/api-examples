@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class StreamBuilderTest {
     String generatedUrl;
-    InputStream instream;
+    InputStream inStream;
     APIPathBuilder pathBuilder;
     private static final String ENDPOINT_LOCATIONS = "locations";
 
@@ -32,7 +32,7 @@ public class StreamBuilderTest {
         pathBuilder = new APIPathBuilder("https://api.conductor.com");
         generatedUrl = pathBuilder.buildWithEndpoint(ENDPOINT_LOCATIONS, null);
         generatedUrl = pathBuilder.addKeyAndSignature(generatedUrl);
-        instream = new StreamBuilder(generatedUrl).getInstream();
+        inStream = new StreamBuilder(generatedUrl).getInStream();
     }
 
     /**
@@ -44,10 +44,10 @@ public class StreamBuilderTest {
     @Test
     public void testStreamBuilder() throws Exception {
         // Check if it is null
-        assertNotNull(instream);
+        assertNotNull(inStream);
         // Check if a list of Location objects is being returned
 
-        List<Location> locationList = mapLocationObject(instream);
+        List<Location> locationList = mapLocationObject(inStream);
         assertNotNull(locationList);
         // Check if the list has location objects
         assertTrue(locationList.size() > 0);
@@ -62,9 +62,9 @@ public class StreamBuilderTest {
     @Test(expected = JsonParseException.class)
     public void checkInValidStreams() throws Exception {
         generatedUrl = new APIPathBuilder("https://api.conductor.com").buildWithEndpoint(ENDPOINT_LOCATIONS, null);
-        instream = new StreamBuilder(generatedUrl).getInstream();
+        inStream = new StreamBuilder(generatedUrl).getInStream();
         // Check if a list of Location objects is being returned
-        List<Location> locationList = mapLocationObject(instream);
+        List<Location> locationList = mapLocationObject(inStream);
     }
 
     /**

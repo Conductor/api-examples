@@ -22,12 +22,10 @@ public class Runner {
             dataDumper.getRankSourceData();
             Thread.sleep(1000);
             dataDumper.getWebPropertiesData();
-            Thread.sleep(1000);
-            dataDumper.getWebPropertyRankReport();
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            dataDumper.commit();
             dataDumper.closeConnection();
         }
 

@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by anihalani on 6/25/15.
+ * Client Web Property Search Volume Report Class to map JSON data returned from searchVolume endPoint
+ */
+
 @JsonPropertyOrder({ "averageVolume", "trackedSearchId", "volumeItems" })
 public class ClientWebPropertySearchVolumeReport {
 

@@ -3,6 +3,11 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Created by anihalani on 6/25/15.
+ * Client Web Property Rank Report Class to map JSON data returned from rankReports endPoint
+ */
+
 @JsonPropertyOrder({ "ranks", "webPropertyId", "trackedSearchId", "itemType", "target", "targetDomainName", "targetUrl" })
 public class ClientWebPropertyRankReport {
 
@@ -13,6 +18,8 @@ public class ClientWebPropertyRankReport {
     private String target;
     private String targetDomainName;
     private String targetUrl;
+
+    private String endDate;
 
     /**
      *
@@ -140,65 +147,73 @@ public class ClientWebPropertyRankReport {
         this.targetUrl = targetUrl;
     }
 
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
     @JsonPropertyOrder({ "UNIVERSAL_RANK", "TRUE_RANK", "CLASSIC_RANK" })
     public class Ranks {
 
-        private long UNIVERSALRANK;
-        private long TRUERANK;
-        private long CLASSICRANK;
+        private long UniversalRank;
+        private long TrueRank;
+        private long ClassicRank;
 
         /**
          *
-         * @return The UNIVERSALRANK
+         * @return The UniversalRank
          */
         @JsonProperty("UNIVERSAL_RANK")
-        public long getUNIVERSALRANK() {
-            return UNIVERSALRANK;
+        public long getUniversalRank() {
+            return UniversalRank;
         }
 
         /**
          *
-         * @param UNIVERSALRANK
+         * @param universalRank
          *            The UNIVERSAL_RANK
          */
-        public void setUNIVERSALRANK(long UNIVERSALRANK) {
-            this.UNIVERSALRANK = UNIVERSALRANK;
+        public void setUniversalRank(long universalRank) {
+            this.UniversalRank = universalRank;
         }
 
         /**
          *
-         * @return The TRUERANK
+         * @return The TrueRank
          */
         @JsonProperty("TRUE_RANK")
-        public long getTRUERANK() {
-            return TRUERANK;
+        public long getTrueRank() {
+            return TrueRank;
         }
 
         /**
          *
-         * @param TRUERANK
+         * @param trueRank
          *            The TRUE_RANK
          */
-        public void setTRUERANK(long TRUERANK) {
-            this.TRUERANK = TRUERANK;
+        public void setTrueRank(long trueRank) {
+            this.TrueRank = trueRank;
         }
 
         /**
          *
-         * @return The CLASSICRANK
+         * @return The ClassicRank
          */
         @JsonProperty("CLASSIC_RANK")
-        public long getCLASSICRANK() {
-            return CLASSICRANK;
+        public long getClassicRank() {
+            return ClassicRank;
         }
 
         /**
          *
-         * @param CLASSICRANK
+         * @param classicRank
          *            The CLASSIC_RANK
          */
-        public void setCLASSICRANK(long CLASSICRANK) {
-            this.CLASSICRANK = CLASSICRANK;
+        public void setClassicRank(long classicRank) {
+            this.ClassicRank = classicRank;
         }
     }
 

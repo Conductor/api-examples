@@ -3,10 +3,15 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "Current" })
+/**
+ * Created by anihalani on 6/25/15.
+ * Reports Class to map Reports data returned from with WebProperties objects
+ */
+
+@JsonPropertyOrder({ "TimePeriod" })
 public class Reports {
 
-    private beans.Current Current;
+    private TimePeriod TimePeriod;
 
     @Override
     public boolean equals(Object o) {
@@ -17,31 +22,31 @@ public class Reports {
 
         Reports reports = (Reports) o;
 
-        return !(Current != null ? !Current.equals(reports.Current) : reports.Current != null);
+        return !(TimePeriod != null ? !TimePeriod.equals(reports.TimePeriod) : reports.TimePeriod != null);
 
     }
 
     @Override
     public int hashCode() {
-        return Current != null ? Current.hashCode() : 0;
+        return TimePeriod != null ? TimePeriod.hashCode() : 0;
     }
 
     /**
      *
-     * @return The Current
+     * @return The TimePeriod
      */
     @JsonProperty("CURRENT")
-    public beans.Current getCurrent() {
-        return Current;
+    public TimePeriod getTimePeriod() {
+        return TimePeriod;
     }
 
     /**
      *
-     * @param current
-     *            The Current
+     * @param timePeriod
+     *            The TimePeriod
      */
-    public void setCurrent(beans.Current current) {
-        this.Current = current;
+    public void setTimePeriod(TimePeriod timePeriod) {
+        this.TimePeriod = timePeriod;
     }
 
 }

@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by anihalani on 6/25/15.
+ * Rank Source Info Class to map RankSource information returned in Web Properties objects
+ */
+
 @JsonPropertyOrder({ "reports", "comparisonWebProperties", "rankSourceId" })
 public class RankSourceInfo {
 

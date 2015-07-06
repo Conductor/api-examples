@@ -4,6 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+/**
+ * Created by anihalani on 6/9/15.
+ * Location class to map JSON objects returned from Location endpoint
+ */
+
 @JsonPropertyOrder({ "locationId", "description" })
 public class Location {
 

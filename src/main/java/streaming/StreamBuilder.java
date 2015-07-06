@@ -12,6 +12,7 @@ import java.io.InputStream;
 /**
  * Created by anihalani on 6/5/15. StreamBuilder class to build the Input Stream from a given URL
  */
+
 public class StreamBuilder {
 
     InputStream inputStream;
@@ -26,11 +27,11 @@ public class StreamBuilder {
     /**
      * Sets the inputStream property of class StreamBuilder
      *
-     * @param instream
+     * @param inStream
      *            - the input stream to read from
      */
-    public void setInstream(InputStream instream) {
-        this.inputStream = instream;
+    public void setInStream(InputStream inStream) {
+        this.inputStream = inStream;
     }
 
     /**
@@ -38,7 +39,7 @@ public class StreamBuilder {
      * 
      * @return inputStream - the input stream for the api end point
      */
-    public InputStream getInstream() {
+    public InputStream getInStream() {
 
         return inputStream;
     }

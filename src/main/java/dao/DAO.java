@@ -1,9 +1,12 @@
 package dao;
 
 import beans.*;
+import com.google.common.base.Strings;
 import jdbc.JDBCConnection;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by anihalani on 6/9/15. DAO class to handle database interactions
@@ -16,7 +19,12 @@ public class DAO {
      * Constructor
      */
     public DAO() {
-        conn = JDBCConnection.getConnection();
+        try {
+            conn = JDBCConnection.getConnection();
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new RuntimeException("Exception occurred in while setting Auto Commit to false", e);
+        }
     }
 
     /**
@@ -28,6 +36,14 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println("Error in DAO.closeConnection");
             e.printStackTrace();
+        }
+    }
+
+    public void commit() {
+        try {
+            conn.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException("Exception occurred while committing the transaction!", e);
         }
     }
 
@@ -99,7 +115,7 @@ public class DAO {
         Device device = (Device) deviceObject;
         // Execute a query
         // the mysql insert statement
-        String query = "insert into device (device_id, description) values (?, ?)";
+        String query = "insert ignore into device (device_id, description) values (?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, device.getDeviceId());
@@ -121,7 +137,7 @@ public class DAO {
         Location location = (Location) locationObject;
         // Execute a query
         // the mysql insert statement
-        String query = "insert into locale (locale_id, description) values (?, ?)";
+        String query = "insert ignore into locale (locale_id, description) values (?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, location.getLocationId());
@@ -143,7 +159,7 @@ public class DAO {
         RankSource rankSource = (RankSource) rankSourceObject;
         // Execute a query
         // the mysql insert statement
-        String query = "insert into rank_source (rank_source_id, base_url, description, name) values (?, ?, ?, ?)";
+        String query = "insert ignore into rank_source (rank_source_id, base_url, description, name) values (?, ?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, rankSource.getRankSourceId());
@@ -171,7 +187,7 @@ public class DAO {
         }
         // Execute a query
         // the mysql insert statement
-        String query = "insert into web_property (web_property_id, name, account_id) values (?, ?, ?)";
+        String query = "insert ignore into web_property (web_property_id, name, account_id) values (?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, webProperty.getWebPropertyId());
@@ -200,7 +216,7 @@ public class DAO {
 
         // Execute a query
         // the mysql insert statement
-        String query = "insert into web_property (web_property_id, name, label) values (?, ?, ?)";
+        String query = "insert ignore into web_property (web_property_id, name, label) values (?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, comparisonWebProperty.getWebPropertyId());
@@ -227,11 +243,11 @@ public class DAO {
         }
         // Execute a query
         // the mysql insert statement
-        String query = "insert into tracked_search (tracked_search_id, status_id, preferred_url, query_phrase, location_id, rank_source_id, device_id, web_property_id ) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "insert ignore into tracked_search (tracked_search_id, status_id, preferred_url, query_phrase, location_id, rank_source_id, device_id, web_property_id ) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1, trackedSearch.getTrackedSearchId());
-        preparedStmt.setInt(2, (trackedSearch.getActive() == true ? 1 : 2));
+        preparedStmt.setInt(2, (trackedSearch.getActive() ? 1 : 2));
         preparedStmt.setString(3, trackedSearch.getPreferredUrl());
         preparedStmt.setString(4, trackedSearch.getQueryPhrase());
         preparedStmt.setInt(5, trackedSearch.getLocationId());
@@ -250,23 +266,31 @@ public class DAO {
      * @throws SQLException
      *             - if there is a problem with setting the parameters for the preparedStatement
      */
-    private PreparedStatement getWebPropertyRankReportPreparedStmt(Object webPropRankReportObject) throws SQLException {
+    private PreparedStatement getWebPropertyRankReportPreparedStmt(Object webPropRankReportObject) throws SQLException,
+            ParseException {
         ClientWebPropertyRankReport webPropertyRankReport = (ClientWebPropertyRankReport) webPropRankReportObject;
 
         // Execute a query
         // the mysql insert statement
-        String query = "insert into client_web_property_rank_report (universal_rank, true_rank, classic_rank, web_property_id, tracked_search_id, item_type, target, target_domain_name, target_url) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "insert ignore into client_web_property_rank_report (universal_rank, true_rank, classic_rank, web_property_id, tracked_search_id, item_type, target, target_domain_name, target_url, time_period_end) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
-        preparedStmt.setLong(1, webPropertyRankReport.getRanks().getUNIVERSALRANK());
-        preparedStmt.setLong(2, webPropertyRankReport.getRanks().getTRUERANK());
-        preparedStmt.setLong(3, webPropertyRankReport.getRanks().getCLASSICRANK());
+        preparedStmt.setLong(1, webPropertyRankReport.getRanks().getUniversalRank());
+        preparedStmt.setLong(2, webPropertyRankReport.getRanks().getTrueRank());
+        preparedStmt.setLong(3, webPropertyRankReport.getRanks().getClassicRank());
         preparedStmt.setLong(4, webPropertyRankReport.getWebPropertyId());
         preparedStmt.setLong(5, webPropertyRankReport.getTrackedSearchId());
         preparedStmt.setString(6, webPropertyRankReport.getItemType());
         preparedStmt.setString(7, webPropertyRankReport.getTarget());
         preparedStmt.setString(8, webPropertyRankReport.getTargetDomainName());
         preparedStmt.setString(9, webPropertyRankReport.getTargetUrl());
+        if (!Strings.isNullOrEmpty(webPropertyRankReport.getEndDate())) {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            java.util.Date date = df.parse(webPropertyRankReport.getEndDate());
+            preparedStmt.setDate(10, new Date(date.getTime()));
+        } else {
+            preparedStmt.setDate(10, null);
+        }
         return preparedStmt;
     }
 
@@ -284,7 +308,7 @@ public class DAO {
 
         // Execute a query
         // the mysql insert statement
-        String query = "insert into client_web_property_search_volume_report (average_volume, tracked_search_id) values (?, ?)";
+        String query = "insert ignore into client_web_property_search_volume_report (average_volume, tracked_search_id) values (?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setLong(1, webPropertySearchVolumeReport.getAverageVolume());
@@ -306,7 +330,7 @@ public class DAO {
 
         // Execute a query
         // the mysql insert statement
-        String query = "insert into tracked_search_volumes (tracked_search_id, month, year, volume ) values (?, ?, ?, ?)";
+        String query = "insert ignore into tracked_search_volume (tracked_search_id, month, year, volume ) values (?, ?, ?, ?)";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setLong(1, volumeItem.getTrackedSearchId());
@@ -323,15 +347,16 @@ public class DAO {
      *            - the web_property_id to be checked
      * @return true - if the web property exists in the web_property table, else return false
      */
-    private boolean webPropertyExists(int webPropertyId) {
+    private boolean webPropertyExists(int webPropertyId) throws SQLException {
 
-        Statement stmt;
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
             stmt = conn.createStatement();
             // Execute a query
             // the mysql select statement
             String query = "select * from web_property where web_property_id=" + webPropertyId;
-            ResultSet rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(query);
             rs.beforeFirst();
 
             if (rs.next()) {
@@ -340,6 +365,9 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println("Error in DAO.webPropertyExits");
             e.printStackTrace();
+        } finally {
+            rs.close();
+            stmt.close();
         }
         return false;
     }
@@ -351,15 +379,16 @@ public class DAO {
      *            - the web_property_id to be checked
      * @return true - if the web property exists in the web_property table, else return false
      */
-    private boolean trackedSearchExists(int trackSearchId) {
+    private boolean trackedSearchExists(int trackSearchId) throws SQLException {
 
-        Statement stmt;
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
             stmt = conn.createStatement();
             // Execute a query
             // the mysql select statement
             String query = "select * from tracked_search where tracked_search_id=" + trackSearchId;
-            ResultSet rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(query);
             rs.beforeFirst();
 
             if (rs.next()) {
@@ -368,38 +397,10 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println("Error in DAO.trackedSearchExists");
             e.printStackTrace();
+        } finally {
+            rs.close();
+            stmt.close();
         }
         return false;
     }
-
-    /**
-     * Returns the data with account id, web_property_id and rank_source_id needed to get rank report data
-     * 
-     * @return the result set generated by the database query
-     */
-
-    public ResultSet getRankSourceIdsFromTrackedSearch() {
-        Statement stmt;
-        ResultSet rs = null;
-        try {
-            if (conn != null) {
-                conn = JDBCConnection.getConnection();
-                stmt = conn.createStatement();
-
-                // Execute a query
-                // the mysql select statement
-                String query = "select DISTINCT web_property.account_id, " + "tracked_search.web_property_id, "
-                        + "tracked_search.rank_source_id " + "from web_property, tracked_search "
-                        + "where web_property.web_property_id = tracked_search.web_property_id;";
-                rs = stmt.executeQuery(query);
-
-            }
-            return rs;
-        } catch (SQLException e) {
-            System.out.println("Error in DAO.trackedSearchExists");
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 }

@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by anihalani on 6/15/15.
+ *  Web Property  Class to map JSON data returned from webProperties endPoint
+ */
+
 @JsonPropertyOrder({ "isActive", "rankSourceInfo", "webPropertyId", "trackedSearchList", "name" })
 public class WebProperty {
 
@@ -19,7 +24,7 @@ public class WebProperty {
 
     /**
      *
-     * @return the Accound Id
+     * @return the Account Id
      */
     public int getAccountId() {
         return accountId;

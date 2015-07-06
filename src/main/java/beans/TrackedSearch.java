@@ -3,6 +3,11 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Created by anihalani on 6/15/15.
+ * TrackedSearch Class to map JSON data returned from TrackedSearch endPoint
+ */
+
 @JsonPropertyOrder({ "isActive", "trackedSearchId", "preferredUrl", "queryPhrase", "locationId", "rankSourceId",
         "deviceId" })
 public class TrackedSearch {

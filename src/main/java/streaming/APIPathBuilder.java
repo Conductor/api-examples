@@ -1,5 +1,6 @@
 package streaming;
 
+import com.google.common.base.Strings;
 import utils.Util;
 
 /**
@@ -14,11 +15,11 @@ public class APIPathBuilder {
     }
 
     /**
-     * Builds and return a complete url including the api baseUrl, endpoint paramter, apiKey and the Shared secret
+     * Builds and return a complete url including the api baseUrl, endpoint parameter, apiKey and the Shared secret
      * 
      * @return The complete usable API url with apiKey and Signature
      * @param completeUrl
-     *            - Url with all the endpoints and correspoinding values
+     *            - Url with all the endpoints and corresponding values
      */
     public String addKeyAndSignature(String completeUrl) {
         return Util.generateRecoServiceUrl(completeUrl);
@@ -36,10 +37,10 @@ public class APIPathBuilder {
     public String buildWithEndpoint(String endPoint, String endPointValue) {
         StringBuilder builder = new StringBuilder(baseUrl);
         builder.append("/v3");
-        if (endPoint != null && !endPoint.equals("")) {
+        if (!Strings.isNullOrEmpty(endPoint)) {
             builder.append("/").append(endPoint);
         }
-        if (endPointValue != null && !endPointValue.equals("")) {
+        if (!Strings.isNullOrEmpty(endPointValue)) {
             builder.append("/").append(endPointValue);
         }
         return (builder.toString());
@@ -58,7 +59,7 @@ public class APIPathBuilder {
     public String addEndPointWithValue(String url, String endpoint, String parameterValue) {
         StringBuilder builder = new StringBuilder(url);
         builder.append("/").append(endpoint);
-        if (parameterValue != null && !parameterValue.equals("")) {
+        if (!Strings.isNullOrEmpty(parameterValue)) {
             builder.append("/").append(parameterValue);
         }
         return builder.toString();

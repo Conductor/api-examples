@@ -3,6 +3,11 @@ package beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Created by anihalani on 6/25/15.
+ * VolumeItem Class to map JSON data returned in the SearchVolume objects
+ */
+
 // Class to contain Volume Items' data
 @JsonPropertyOrder({ "volume", "month", "year" })
 public class VolumeItem {
