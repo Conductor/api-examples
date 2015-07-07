@@ -64,7 +64,7 @@ public class Util {
         final String stringToHash = apiKey + sharedSecret + reqEpochSec;
         final MessageDigest md = MessageDigest.getInstance("MD5");
         final byte[] digestBytes = md.digest(stringToHash.getBytes());
-        // This is ugly, but it avoids the dependence on commons.codec.binary, with which we've had classpath issues
+        // It avoids the dependence on commons.codec.binary, which could have classpath issues
         final StringBuffer sb = new StringBuffer();
         for (int i = 0; i < digestBytes.length; i++) {
             sb.append(Integer.toString((digestBytes[i] & 0xff) + 0x100, 16).substring(1));
