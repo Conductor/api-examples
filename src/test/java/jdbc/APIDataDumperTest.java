@@ -1,7 +1,6 @@
 package jdbc;
 
 import beans.*;
-import com.mockrunner.mock.jdbc.MockResultSet;
 import dao.DAO;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -15,8 +14,6 @@ import streaming.StreamBuilder;
 
 import java.io.InputStream;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -251,56 +248,4 @@ public class APIDataDumperTest {
         Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(9).getTargetDomainName(), "www.cedaradirondackchairs.net");
         Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(10).getTargetUrl(), "http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg");
     }
-
-    /**
-     * Returns the given data in the form of ResultSet
-     * 
-     * @return - ResultSet generated
-     * @throws Exception
-     *             - Java.Lang exception while getting resultset from mockResults
-     */
-    private ResultSet getMockResultSet() throws Exception {
-        MyResultSet myResultSet = new MyResultSet();
-        List<String> headers = new ArrayList<>();
-        headers.add("account_id");
-        headers.add("web_property_id");
-        headers.add("rank_source_id");
-
-        List<List<Object>> data = new ArrayList<>();
-
-        List<Object> objects = new ArrayList<>();
-        objects.add(3);
-        objects.add(7);
-        objects.add(1);
-        data.add(objects);
-
-        return myResultSet.getResultSet(headers, data);
-    }
-
-    // A sub class to help generate ResultSet from the data
-    public class MyResultSet {
-
-        public ResultSet getResultSet(List<String> headers, List<List<Object>> data) throws Exception {
-
-            // validation
-            if (headers == null || data == null) {
-                throw new Exception("null parameters");
-            }
-
-            // create a mock result set
-            MockResultSet mockResultSet = new MockResultSet("myResultSet");
-
-            // add header
-            for (String string : headers) {
-                mockResultSet.addColumn(string);
-            }
-
-            // add data
-            for (List<Object> list : data) {
-                mockResultSet.addRow(list);
-            }
-            return mockResultSet;
-        }
-    }
-
 }
