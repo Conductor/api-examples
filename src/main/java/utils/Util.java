@@ -41,7 +41,7 @@ public class Util {
     /**
      * Given a base api end point url and an {@code apiKey} and {@code sharedSecret}, generate signed api end point url.
      */
-    public static String generateRecoServiceUrl(final String apiEndpointUrl) {
+    public static String generateApiUrl(final String apiEndpointUrl) {
         try {
             Properties properties = readProperties(PROPS_FILE);
             return apiEndpointUrl

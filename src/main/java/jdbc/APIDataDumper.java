@@ -125,7 +125,8 @@ public class APIDataDumper {
 
         try {
             for (String account : accounts) {
-                String webPropertyUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, account);
+                String trimmmedAccount = account.trim();
+                String webPropertyUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, trimmmedAccount);
                 webPropertyUrl = pathBuilder.addEndPointWithValue(webPropertyUrl, ENDPOINT_WEB_PROPERTY, null);
                 webPropertyUrl = pathBuilder.addKeyAndSignature(webPropertyUrl);
                 Thread.sleep(1000);
@@ -241,7 +242,7 @@ public class APIDataDumper {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Exception occurred in DatDumper.writeObjects for url %s", url), e);
+            throw new RuntimeException(String.format("Exception occurred in DataDumper.writeObjects for url %s", url), e);
         } finally {
             try {
                 if (inStream != null) {

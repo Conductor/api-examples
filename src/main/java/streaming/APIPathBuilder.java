@@ -22,7 +22,7 @@ public class APIPathBuilder {
      *            - Url with all the endpoints and corresponding values
      */
     public String addKeyAndSignature(String completeUrl) {
-        return Util.generateRecoServiceUrl(completeUrl);
+        return Util.generateApiUrl(completeUrl);
     }
 
     /**
