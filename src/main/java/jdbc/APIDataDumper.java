@@ -4,6 +4,7 @@ import beans.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
@@ -198,8 +199,9 @@ public class APIDataDumper {
 
             inStream = streamBuilder.buildInStream(url);
             JsonFactory jsonFactory = new JsonFactory();
-            JsonParser jParser = jsonFactory.createJsonParser(inStream);
+            JsonParser jParser = jsonFactory.createParser(inStream);
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
             // Read the json objects from stream one at a time
             while (jParser.nextToken() != JsonToken.END_ARRAY) {
                 if (jParser.getCurrentToken() == JsonToken.START_ARRAY) {

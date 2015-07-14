@@ -6,11 +6,10 @@ import jdbc.APIDataDumper;
 public class Runner {
     public static final String CONDUCTOR_API_BASE_URL = "https://api.conductor.com";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         APIDataDumper dataDumper = new APIDataDumper(CONDUCTOR_API_BASE_URL);
         try {
-
             /*
              * The thread sleeps for 1 sec after each endpoint call to make sure not more than one call is made to the
              * API in a single second
@@ -22,12 +21,9 @@ public class Runner {
             dataDumper.getRankSourceData();
             Thread.sleep(1000);
             dataDumper.getWebPropertiesData();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             dataDumper.commit();
             dataDumper.closeConnection();
         }
-
     }
 }

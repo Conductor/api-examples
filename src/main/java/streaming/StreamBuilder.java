@@ -1,13 +1,8 @@
 package streaming;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Created by anihalani on 6/5/15. StreamBuilder class to build the Input Stream from a given URL
@@ -53,12 +48,7 @@ public class StreamBuilder {
     public InputStream buildInStream(String url) throws RuntimeException {
 
         try {
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet getRequest = new HttpGet(url);
-            HttpResponse httpResponse = httpClient.execute(getRequest);
-            HttpEntity entity = httpResponse.getEntity();
-            return entity.getContent();
-
+            return new URL(url).openStream();
         } catch (IOException e) {
             System.out.println("Error in StreamBuilder.buildInStream");
             throw new RuntimeException(String.format("Unable to create InputStream from API \n %s", e));
