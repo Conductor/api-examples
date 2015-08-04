@@ -7,7 +7,6 @@ public class Runner {
     public static final String CONDUCTOR_API_BASE_URL = "https://api.conductor.com";
 
     public static void main(String[] args) throws InterruptedException {
-
         APIDataDumper dataDumper = new APIDataDumper(CONDUCTOR_API_BASE_URL);
         try {
             /*
@@ -21,6 +20,8 @@ public class Runner {
             dataDumper.getRankSourceData();
             Thread.sleep(1000);
             dataDumper.getWebPropertiesData();
+            Thread.sleep(1000);
+            dataDumper.getCategoryData();
         } finally {
             dataDumper.commit();
             dataDumper.closeConnection();

@@ -78,3 +78,16 @@ CREATE TABLE IF NOT EXISTS `client_web_property_rank_report` (
    CONSTRAINT `unique_rank_report` UNIQUE KEY( `tracked_search_id`, `month`, `year`)
  );
 
+CREATE TABLE IF NOT EXISTS `category` (
+   `category_id` int(11) NOT NULL,
+   `name` varchar(255) NOT NULL,
+   `created` date DEFAULT NULL,
+   `modified` date DEFAULT NULL,
+   CONSTRAINT `unique_category` UNIQUE KEY(`name`)
+ );
+ 
+ CREATE TABLE IF NOT EXISTS `category_tracked_search_mapping` (
+   `category_id` int(11) NOT NULL,
+   `tracked_search_id` int(11) NOT NULL,
+   CONSTRAINT `unique_category_tracked_search_map` UNIQUE KEY(`category_id`, `tracked_search_id`)
+ );

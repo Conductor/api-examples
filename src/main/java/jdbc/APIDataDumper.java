@@ -28,6 +28,7 @@ public class APIDataDumper {
     private static final String ENDPOINT_RANK_SOURCES = "rank-sources";
     private static final String ENDPOINT_DEVICES = "devices";
     private static final String ENDPOINT_WEB_PROPERTY = "web-properties";
+    private static final String ENDPOINT_CATEGORIES = "categories";
 
     private APIPathBuilder pathBuilder;
     private DAO dao;
@@ -125,8 +126,8 @@ public class APIDataDumper {
 
         try {
             for (String account : accounts) {
-                String trimmmedAccount = account.trim();
-                String webPropertyUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, trimmmedAccount);
+                String trimmedAccount = account.trim();
+                String webPropertyUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, trimmedAccount);
                 webPropertyUrl = pathBuilder.addEndPointWithValue(webPropertyUrl, ENDPOINT_WEB_PROPERTY, null);
                 webPropertyUrl = pathBuilder.addKeyAndSignature(webPropertyUrl);
                 Thread.sleep(1000);
@@ -169,6 +170,27 @@ public class APIDataDumper {
             };
 
             writeObjects(webPropertyRankReportUrl, ClientWebPropertyRankReport.class, timePeriodAddingFunction);
+        }
+    }
+
+    /**
+     * Writes the Categories data returned from the API endpoint to the local database
+     */
+    public void getCategoryData() {
+        Properties properties = Util.readProperties(Util.PROPS_FILE);
+        String[] accounts = properties.getProperty("ACCOUNTS").split(",");
+
+        try {
+            for (String account : accounts) {
+                String accountBaseUrl = pathBuilder.buildWithEndpoint(ENDPOINT_ACCOUNTS, account);
+                String categoryUrl = pathBuilder.addEndPointWithValue(accountBaseUrl, ENDPOINT_CATEGORIES, null);
+                categoryUrl = pathBuilder.addKeyAndSignature(categoryUrl);
+                Thread.sleep(1000);
+                writeObjects(categoryUrl, Category.class);
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted Exception in APIDataDumper.getCategories()");
+            e.printStackTrace();
         }
     }
 
@@ -234,8 +256,6 @@ public class APIDataDumper {
                                 .getTrackedSearchId());
                         dao.writeToDatabase(volumeItem);
                     }
-                    dao.writeToDatabase(object);
-                } else if (object instanceof ClientWebPropertyRankReport) {
                     dao.writeToDatabase(object);
                 } else {
                     dao.writeToDatabase(object);
