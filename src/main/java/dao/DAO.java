@@ -5,8 +5,10 @@ import com.google.common.base.Strings;
 import jdbc.JDBCConnection;
 
 import java.sql.*;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by anihalani on 6/9/15. DAO class to handle database interactions
@@ -57,44 +59,56 @@ public class DAO {
         if (conn == null) {
             throw new Exception("Connection not successful!");
         }
-
+        List<PreparedStatement> preparedStatements;
         try {
-            PreparedStatement preparedStmt;
+            preparedStatements = new ArrayList<>();
             switch (object.getClass().getName()) {
             case "beans.Device":
-                preparedStmt = getDevicePreparedStmt(object);
+                preparedStatements.add(getDevicePreparedStmt(object));
                 break;
             case "beans.Location":
-                preparedStmt = getLocationsPreparedStmt(object);
+                preparedStatements.add(getLocationsPreparedStmt(object));
                 break;
             case "beans.RankSource":
-                preparedStmt = getRankSourcePreparedStmt(object);
+                preparedStatements.add(getRankSourcePreparedStmt(object));
                 break;
             case "beans.WebProperty":
-                preparedStmt = getWebPropertyPreparedStmt(object);
+                preparedStatements.add(getWebPropertyPreparedStmt(object));
                 break;
             case "beans.ComparisonWebProperty":
-                preparedStmt = getComparisonWebPropertyPreparedStmt(object);
+                preparedStatements.add(getComparisonWebPropertyPreparedStmt(object));
                 break;
             case "beans.TrackedSearch":
-                preparedStmt = getTrackedSearchPreparedStmt(object);
+                preparedStatements.add(getTrackedSearchPreparedStmt(object));
                 break;
             case "beans.ClientWebPropertyRankReport":
-                preparedStmt = getWebPropertyRankReportPreparedStmt(object);
+                preparedStatements.add(getWebPropertyRankReportPreparedStmt(object));
                 break;
             case "beans.ClientWebPropertySearchVolumeReport":
-                preparedStmt = getWebPropertySearchVolumeReportStmt(object);
+                preparedStatements.add(getWebPropertySearchVolumeReportStmt(object));
                 break;
             case "beans.VolumeItem":
-                preparedStmt = getVolumePreparedStmt(object);
+                preparedStatements.add(getVolumePreparedStmt(object));
+                break;
+            case "beans.Category":
+                Category category = (Category) object;
+                category.setCategoryId(getNextCategoryId());
+                preparedStatements.add(getCategoryPreparedStmt(category));
+                for (int trackedSearchId : category.getTrackedSearchIds()) {
+                    preparedStatements.add(getCategoryTrackedSearchMapping(category, trackedSearchId));
+                }
                 break;
             default:
-                preparedStmt = null;
+                preparedStatements = null;
                 break;
             }
 
-            if (preparedStmt != null) {
-                preparedStmt.execute();
+            if (preparedStatements != null) {
+                for (PreparedStatement preparedStmt : preparedStatements) {
+                    if (preparedStmt != null) {
+                        preparedStmt.execute();
+                    }
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error in DAO.writeToDatabase");
@@ -113,7 +127,7 @@ public class DAO {
      */
     private PreparedStatement getDevicePreparedStmt(Object deviceObject) throws SQLException {
         Device device = (Device) deviceObject;
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into device (device_id, description) values (?, ?)";
 
@@ -135,7 +149,7 @@ public class DAO {
      */
     private PreparedStatement getLocationsPreparedStmt(Object locationObject) throws SQLException {
         Location location = (Location) locationObject;
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into locale (locale_id, description) values (?, ?)";
 
@@ -157,7 +171,7 @@ public class DAO {
      */
     private PreparedStatement getRankSourcePreparedStmt(Object rankSourceObject) throws SQLException {
         RankSource rankSource = (RankSource) rankSourceObject;
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into rank_source (rank_source_id, base_url, description, name) values (?, ?, ?, ?)";
 
@@ -185,7 +199,7 @@ public class DAO {
         if (webPropertyExists(webProperty.getWebPropertyId())) {
             return null;
         }
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into web_property (web_property_id, name, account_id) values (?, ?, ?)";
 
@@ -213,8 +227,7 @@ public class DAO {
         if (webPropertyExists(comparisonWebProperty.getWebPropertyId())) {
             return null;
         }
-
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into web_property (web_property_id, name, label) values (?, ?, ?)";
 
@@ -241,7 +254,7 @@ public class DAO {
         if (trackedSearchExists(trackedSearch.getTrackedSearchId())) {
             return null;
         }
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into tracked_search (tracked_search_id, status_id, preferred_url, query_phrase, location_id, rank_source_id, device_id, web_property_id ) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -270,7 +283,7 @@ public class DAO {
             ParseException {
         ClientWebPropertyRankReport webPropertyRankReport = (ClientWebPropertyRankReport) webPropRankReportObject;
 
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into client_web_property_rank_report (universal_rank, true_rank, classic_rank, web_property_id, tracked_search_id, item_type, target, target_domain_name, target_url, time_period_end) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -306,7 +319,7 @@ public class DAO {
     private PreparedStatement getWebPropertySearchVolumeReportStmt(Object webPropSearchVolObject) throws SQLException {
         ClientWebPropertySearchVolumeReport webPropertySearchVolumeReport = (ClientWebPropertySearchVolumeReport) webPropSearchVolObject;
 
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into client_web_property_search_volume_report (average_volume, tracked_search_id) values (?, ?)";
 
@@ -328,7 +341,7 @@ public class DAO {
     private PreparedStatement getVolumePreparedStmt(Object volumeObject) throws SQLException {
         VolumeItem volumeItem = (VolumeItem) volumeObject;
 
-        // Execute a query
+        // Prepare a query
         // the mysql insert statement
         String query = "insert ignore into tracked_search_volume (tracked_search_id, month, year, volume ) values (?, ?, ?, ?)";
 
@@ -338,6 +351,66 @@ public class DAO {
         preparedStmt.setInt(3, volumeItem.getYear());
         preparedStmt.setLong(4, volumeItem.getVolume());
         return preparedStmt;
+    }
+
+    /**
+     * Returns a prepared statement for inserting a row in the categories tracked search mapping table
+     *
+     * @param category
+     *            - a beans.category instance
+     * @return -the prepared statement for query to insert row in category_tracked_search_mapping table
+     * @throws SQLException
+     *             - if there is a problem with setting the parameters for the preparedStatement
+     */
+    private PreparedStatement getCategoryTrackedSearchMapping(Category category, int trackedSearchId)
+            throws SQLException {
+        // Prepare a query
+        // the mysql insert statement
+        String query = "insert ignore into category_tracked_search_mapping (category_id, tracked_search_id) values (?, ?)";
+
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setInt(1, category.getCategoryId());
+        preparedStmt.setInt(2, trackedSearchId);
+
+        return preparedStmt;
+    }
+
+    /**
+     * Returns a prepared statement for inserting a row in the categories table
+     *
+     * @param category
+     *            - a beans.category instance
+     * @return -the prepared statement for query to insert row in Category table
+     * @throws SQLException
+     *             - if there is a problem with setting the parameters for the preparedStatement
+     */
+    private PreparedStatement getCategoryPreparedStmt(Category category) throws SQLException, ParseException {
+        // Prepare a query
+        // the mysql insert statement
+        String query = "insert ignore into category ( name, created, modified, category_id) values (?, ?, ?, ?)";
+
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setString(1, category.getName());
+        preparedStmt.setDate(2, getJavaDate(category.getCreated()));
+        preparedStmt.setDate(3, getJavaDate(category.getModified()));
+        preparedStmt.setLong(4, category.getCategoryId());
+
+        return preparedStmt;
+    }
+
+    /**
+     * @param jodaDate - date in the format - yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     * @return - SQL date genrated from the joda date
+     * @throws ParseException - occurs while parsing the joda date
+     */
+    private Date getJavaDate(String jodaDate) throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        if (!Strings.isNullOrEmpty(jodaDate)) {
+            java.util.Date date = df.parse(jodaDate);
+            return new Date(date.getTime());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -353,7 +426,7 @@ public class DAO {
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            // Execute a query
+            // Prepare a query
             // the mysql select statement
             String query = "select * from web_property where web_property_id=" + webPropertyId;
             rs = stmt.executeQuery(query);
@@ -385,7 +458,7 @@ public class DAO {
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            // Execute a query
+            // Prepare a query
             // the mysql select statement
             String query = "select * from tracked_search where tracked_search_id=" + trackSearchId;
             rs = stmt.executeQuery(query);
@@ -402,5 +475,39 @@ public class DAO {
             stmt.close();
         }
         return false;
+    }
+
+    /**
+     * Returns the max Category Id from the category table
+     * 
+     * @return The maximum value of the category id
+     */
+    private int getNextCategoryId() throws SQLException {
+
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+
+            // Prepare a query
+            // the mysql select statement
+            String query = "select MAX(category_id) from category";
+            rs = stmt.executeQuery(query);
+            rs.beforeFirst();
+
+            if (rs.next()) {
+                int categoryId = rs.getInt(1);
+                return categoryId+1;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in DAO.getNextCategoryId");
+            e.printStackTrace();
+        } finally {
+            if (rs != null && stmt != null) {
+                rs.close();
+                stmt.close();
+            }
+        }
+        return 1;
     }
 }

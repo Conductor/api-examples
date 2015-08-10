@@ -226,7 +226,8 @@ public class APIDataDumperTest {
         Assert.assertEquals(arg.getAllValues().get(0).getWebPropertyId(), 215);
 
         // Verify if correct Comparison Web Property data is returned
-        ArgumentCaptor<ComparisonWebProperty> comparisonWebPropertyArgumentCaptor = ArgumentCaptor.forClass(ComparisonWebProperty.class);
+        ArgumentCaptor<ComparisonWebProperty> comparisonWebPropertyArgumentCaptor = ArgumentCaptor
+                .forClass(ComparisonWebProperty.class);
         verify(dao, times(11)).writeToDatabase(comparisonWebPropertyArgumentCaptor.capture());
         Assert.assertEquals(comparisonWebPropertyArgumentCaptor.getAllValues().get(1).getWebPropertyId(), 219);
 
@@ -236,16 +237,53 @@ public class APIDataDumperTest {
         Assert.assertEquals(trackedSearchArgumentCaptor.getAllValues().get(4).getTrackedSearchId(), 4576447);
 
         // Verify if correct Search Volume data is returned
-        ArgumentCaptor<ClientWebPropertySearchVolumeReport> clientWebPropertySearchVolumeReportArgumentCaptor = ArgumentCaptor.forClass(ClientWebPropertySearchVolumeReport.class);
+        ArgumentCaptor<ClientWebPropertySearchVolumeReport> clientWebPropertySearchVolumeReportArgumentCaptor = ArgumentCaptor
+                .forClass(ClientWebPropertySearchVolumeReport.class);
         verify(dao, times(11)).writeToDatabase(clientWebPropertySearchVolumeReportArgumentCaptor.capture());
-        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems().get(0).getYear(), 2015);
-        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems().get(1).getMonth(), 4);
-        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getAverageVolume(), 49500);
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems()
+                .get(0).getYear(), 2015);
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getVolumeItems()
+                .get(1).getMonth(), 4);
+        Assert.assertEquals(clientWebPropertySearchVolumeReportArgumentCaptor.getAllValues().get(8).getAverageVolume(),
+                49500);
 
         // Verify if correct Rank Report data is returned
-        ArgumentCaptor<ClientWebPropertyRankReport> clientWebPropertyRankReportArgumentCaptor = ArgumentCaptor.forClass(ClientWebPropertyRankReport.class);
+        ArgumentCaptor<ClientWebPropertyRankReport> clientWebPropertyRankReportArgumentCaptor = ArgumentCaptor
+                .forClass(ClientWebPropertyRankReport.class);
         verify(dao, times(11)).writeToDatabase(clientWebPropertyRankReportArgumentCaptor.capture());
-        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(9).getTargetDomainName(), "www.cedaradirondackchairs.net");
-        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(10).getTargetUrl(), "http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg");
+        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(9).getTargetDomainName(),
+                "www.cedaradirondackchairs.net");
+        Assert.assertEquals(clientWebPropertyRankReportArgumentCaptor.getAllValues().get(10).getTargetUrl(),
+                "http://www.cedaradirondackchairs.net/images/premium%20adirondack%20chair.jpg");
+    }
+
+    /**
+     * Verify interactions with getCategories method
+     *
+     * @throws Exception
+     *             - SQL Exception while writing to database
+     */
+    @Test
+    public void verifyInteractionsWithGetCategoriesData() throws Exception {
+        // create method stub
+        when(streamBuilder.buildInStream(anyString())).thenReturn(
+                IOUtils.toInputStream("[{\n"
+                        + "        \"created\": \"2013-09-19T11:31:06.000Z\",\n" + "        \"trackedSearchIds\": [\n"
+                        + "            295979\n" + "        ],\n"
+                        + "        \"modified\": \"2015-06-16T08:26:03.000Z\",\n"
+                        + "        \"name\": \"Ideas Pages\"\n" + "    },\n" + "    {\n"
+                        + "        \"created\": \"2015-02-20T12:26:09.000Z\",\n"
+                        + "        \"trackedSearchIds\": [\n" + "            6876020,\n" + "            6876021,\n"
+                        + "            6876019\n" + "        ],\n"
+                        + "        \"modified\": \"2015-03-26T13:40:19.000Z\",\n"
+                        + "        \"name\": \"Smart Innovation Platform\"\n" + "    }]"));
+        dataDumper.getCategoryData();
+
+        ArgumentCaptor<Category> arg = ArgumentCaptor.forClass(Category.class);
+        verify(dao, times(2)).writeToDatabase(arg.capture());
+        Assert.assertEquals(arg.getAllValues().size(), 2);
+        Assert.assertEquals(arg.getAllValues().get(0).getName(), "Ideas Pages");
+        Assert.assertEquals(arg.getAllValues().get(1).getName(), "Smart Innovation Platform");
+
     }
 }
