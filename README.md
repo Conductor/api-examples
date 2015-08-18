@@ -10,8 +10,22 @@ along with all necessary dimensional data.
 
 To execute:
 
+0) Ensure that your $JAVA_HOME points to Java8. Run
+> echo $JAVA_HOME 
+<Should point to a java 8 version>
+
 1) Replace the placeholder on the first line of db_scripts/create_schemas.sql with the name of the database to read data into.
 
-2) Replace the placeholders in src/main/resources/conductorAPI.properties with their actual values.
+2) Run the said 'create_schemas' script in a mysql prompt. ( Use the following commands)
+  > mysql -u root -p
+  Enter password: <Return>
+  
+  mysql> \. <Full path to the create_schemas.sql file [Something like /Users/<username>/api-examples/db_scripts/create_schema.sql]>
+  
+  mysql> exit
+  
+  >
 
-3) Run `mvn compile exec:java` from the main directory of the project. Execution may take a few minutes.
+3) Replace the placeholders in src/main/resources/conductorAPI.properties with their actual values.
+
+4) Run `mvn compile exec:java` from the main directory of the project. Execution may take a few minutes.
